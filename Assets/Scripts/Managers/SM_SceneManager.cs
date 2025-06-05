@@ -6,6 +6,7 @@ using Systems.EventHub;
 using Systems.EventSignals;
 using Table;
 using UI;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
@@ -51,63 +52,84 @@ namespace Managers
         // Scene Change
         public void RequestSceneChange(SM_SceneCommand command)
         {
-            if (command.TransitionStyle == ESM_TransitionType.Direct)
+            switch (command.TransitionStyle)
             {
-                // 1. UI Clear
-                UnloadScene(command.ClearPolicy);
-                
-                // 2. Diract Show UI
-                GameObject nextScene = GetNextScene(command.NextSceneName);
-            
-                if (!nextScene)
+                case ESM_TransitionType.Direct:
                 {
-                    SM_Log.ASSERT(false, $"There is No Next Scene(UI). ({command.NextSceneName}). Please Check UITable");
+                    // 1. UI Clear
+                    UnloadScene(command.ClearPolicy);
+                
+                    // 2. Diract Show UI
+                    GameObject nextScene = GetNextScene(command.NextSceneName);
+            
+                    if (!nextScene)
+                    {
+                        SM_Log.ASSERT(false, $"There is No Next Scene(UI). ({command.NextSceneName}). Please Check UITable");
+                    }
+                    SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
+                    uiManager.PushUI(nextScene);
+                    break;
                 }
-                SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
-                uiManager.PushUI(nextScene);
-            }
-            else if(command.TransitionStyle == ESM_TransitionType.Fade || command.TransitionStyle == ESM_TransitionType.OnlyFadeIn)
-            {
-                StartCoroutine(HandleSceneTransition(command));
+                case ESM_TransitionType.Fade:
+                case ESM_TransitionType.OnlyFadeIn:
+                {
+                    StartCoroutine(HandleSceneTransition(command));
+                    break;
+                }
+                default:
+                    break;
             }
         }
         private IEnumerator HandleSceneTransition(SM_SceneCommand command)
         {
-            // 1. Make Loading Scene
-            GameObject loadingScene = null;
-            yield return MakeLoadingScene(command, loadingScene);
+            if (command.TransitionStyle == ESM_TransitionType.Fade)
+            {
+                // 1. Make Loading Scene
+                GameObject loadingScene = null;
+                yield return MakeLoadingScene(command, loadingScene);
             
-            // 2. Start FadeOut
-            yield return StartFadeOut(loadingScene, command.FadeDuration);
+                // 2. Start FadeOut
+                yield return StartFadeOut(loadingScene, command.FadeDuration);
             
-            // 3. Process intermediate course
-            GameObject nextScene = null;
-            yield return WaitForLoading(command, nextScene);
+                // 3. Process intermediate course
+                GameObject nextScene = null;
+                yield return WaitForLoading(command, scene => nextScene = scene);
             
-            // 4. Start FadeIn
-            yield return StartFadeIn(nextScene, command.FadeDuration);  
+                // 4. Start FadeIn
+                yield return StartFadeIn(nextScene, command.FadeDuration);  
             
-            // 5. Destroy LoadingScene
-            yield return UnloadLoading();
+                // 5. Destroy LoadingScene
+                yield return UnloadLoading();
             
-            // 6. Complete Event
-            command.OnTransitionComplete?.Invoke();
+                // 6. Complete Event
+                command.OnTransitionComplete?.Invoke();   
+            }
+            else if (command.TransitionStyle == ESM_TransitionType.OnlyFadeIn)
+            {
+                GameObject nextScene =  MakeNextScene(command);
+                if (nextScene)
+                {
+                    yield return null;
+                }
+                
+                yield return StartFadeIn(nextScene, command.FadeDuration);  
+                yield return UnloadLoading();
+                command.OnTransitionComplete?.Invoke();  
+            }
         }
         private IEnumerator MakeLoadingScene(SM_SceneCommand command, GameObject loadingUI)
         {
-            if (command.TransitionStyle == ESM_TransitionType.OnlyFadeIn)
-            {
-                yield break;
-            }
-            
             loadingUI = SM_SystemLibrary.GetLoadingUI(command.LoadingType);
             if (loadingUI == null)
             {
                 SM_Log.WARNING($"There is no UI ({command.LoadingType.ToString()})");
+                yield break;
             }
             
             SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
             uiManager?.PushUI(loadingUI);
+
+            yield return null;
         }
 
         private IEnumerator StartFadeOut(GameObject loadingUI, float fadeDuration)
@@ -118,13 +140,8 @@ namespace Managers
             }
         }
         
-        private IEnumerator WaitForLoading(SM_SceneCommand command, GameObject nextScene)
+        private IEnumerator WaitForLoading(SM_SceneCommand command, Action<GameObject> onLoaded)
         {
-            if (command.TransitionStyle == ESM_TransitionType.OnlyFadeIn)
-            {
-                yield break;
-            }
-            
             SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
             
             float minLoadingTime = tableManager ? tableManager.GetParameter(ESM_CommonType.LOADING_TIME) : 2f;
@@ -135,7 +152,9 @@ namespace Managers
             yield return StartCoroutine(UnloadScene(command.ClearPolicy));
 
             // 2. 다음 씬 로드 시작
-            yield return StartCoroutine(MakeNextScene(command, nextScene));
+            GameObject nextScene = MakeNextScene(command);
+            onLoaded?.Invoke(nextScene);
+            yield return null;
 
             // 3. Mode 바인딩 to Scene
             yield return StartCoroutine(MakeMode(command.NextSceneName, () => unloadFinished = true));
@@ -153,18 +172,19 @@ namespace Managers
                 yield return null;
             }
         }
-        private IEnumerator MakeNextScene(SM_SceneCommand command, GameObject nextScene)
+        private GameObject MakeNextScene(SM_SceneCommand command)
         {
-            nextScene = GetNextScene(command.NextSceneName);
+            GameObject nextScene = GetNextScene(command.NextSceneName);
             
             if (!nextScene)
             {
                 SM_Log.ASSERT(false, $"There is No Next Scene(UI). ({command.NextSceneName}). Please Check UITable");
-                yield break;
+                return null;
             }
             SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
             uiManager.PushUI(nextScene);
-            yield return null;
+            
+            return nextScene;
         }
 
         private IEnumerator MakeMode(string nextSceneName, Action onComplete = null)
