@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using Installer;
-using Systems;
 using Systems.EventHub;
-using Table;
 using UI;
 using UnityEngine;
 using Zenject;
@@ -27,7 +25,7 @@ namespace Managers
         // Managers
         private Dictionary<ESM_Manager, MonoBehaviour> _managers = new Dictionary<ESM_Manager, MonoBehaviour>();
         [Inject]
-        private void Construct()
+        private void Construct(SignalBus signalBus)
         {
             if (Instance != null && Instance != this)
             {
@@ -36,15 +34,16 @@ namespace Managers
             }
 
             Instance = this;
-
-            Start();
+            _signalBus = signalBus;
         }
+        
+        
 
         private void Start()
         {
             Start_Internal();
 
-            DebugFade();
+            //DebugFade();
             
             StartLogo();
         }
@@ -84,16 +83,10 @@ namespace Managers
         {
             if(GetManager(ESM_Manager.SceneManager) is SM_SceneManager sceneManager)
             {
-                SM_TableManager tableManager = (SM_TableManager)GetManager(ESM_Manager.TableManager);
-                
                 var command = new SM_SceneCommand(
-                    current: "Init",
                     next: SM_LogoPanel.GetName(),
-                    loadingUIType: ESM_LoadingUIType.Default,
-                    fadeDuration: tableManager ? tableManager.GetParameter(ESM_CommonType.FADE_DURATION_TIME) : 1f,
-                    onComplete: () => SM_Log.INFO("씬 이동 완료"),
-                    transitionStyle: ESM_TransitionType.Fade,
-                    clearPolicy:ESM_UIClearPolicy.ClearAllExceptLoading);
+                    transitionStyle: ESM_TransitionType.Direct,
+                    clearPolicy: ESM_UIClearPolicy.ClearAll);
                 
                 sceneManager.RequestSceneChange(command);
             }

@@ -7,12 +7,9 @@ namespace UI
     {
         [SerializeField] private CanvasGroup canvasGroup;
         
-        private void Awake()
+        public void BindCanvasGroup(CanvasGroup _canvasGroup)
         {
-            if (canvasGroup == null)
-            {
-                canvasGroup = GetComponent<CanvasGroup>();
-            }
+            canvasGroup = _canvasGroup;
         }
 
         public IEnumerator FadeIn(float duration)

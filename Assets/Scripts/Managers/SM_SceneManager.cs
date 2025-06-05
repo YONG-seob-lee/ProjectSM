@@ -20,13 +20,8 @@ namespace Managers
         {
             signalBus.Subscribe<Signal_InitializeManagers>(x => InitManager(x.EventHub));
             _signalBus = signalBus;
-        }
-        [Inject]
-        private void Construct()
-        {
             SM_GameManager.Instance?.RegisterManager(ESM_Manager.SceneManager, this);
         }
-
         public void InitManager(SM_ManagerEventHub eventHub)
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
@@ -56,9 +51,26 @@ namespace Managers
         // Scene Change
         public void RequestSceneChange(SM_SceneCommand command)
         {
-            StartCoroutine(HandleSceneTransition(command));
+            if (command.TransitionStyle == ESM_TransitionType.Direct)
+            {
+                // 1. UI Clear
+                UnloadScene(command.ClearPolicy);
+                
+                // 2. Diract Show UI
+                GameObject nextScene = GetNextScene(command.NextSceneName);
+            
+                if (!nextScene)
+                {
+                    SM_Log.ASSERT(false, $"There is No Next Scene(UI). ({command.NextSceneName}). Please Check UITable");
+                }
+                SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
+                uiManager.PushUI(nextScene);
+            }
+            else if(command.TransitionStyle == ESM_TransitionType.Fade || command.TransitionStyle == ESM_TransitionType.OnlyFadeIn)
+            {
+                StartCoroutine(HandleSceneTransition(command));
+            }
         }
-
         private IEnumerator HandleSceneTransition(SM_SceneCommand command)
         {
             yield return StartFadeOut(command);
@@ -70,6 +82,11 @@ namespace Managers
 
         private IEnumerator StartFadeOut(SM_SceneCommand command)
         {
+            if (command.TransitionStyle == ESM_TransitionType.OnlyFadeIn)
+            {
+                yield break;
+            }
+            
             GameObject loadingUI = SM_SystemLibrary.GetLoadingUI(command.LoadingType);
             if (loadingUI == null)
             {
@@ -87,6 +104,11 @@ namespace Managers
         
         private IEnumerator WaitForLoading(SM_SceneCommand command)
         {
+            if (command.TransitionStyle == ESM_TransitionType.OnlyFadeIn)
+            {
+                yield break;
+            }
+            
             SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
             
             float minLoadingTime = tableManager ? tableManager.GetParameter(ESM_CommonType.LOADING_TIME) : 2f;
@@ -110,7 +132,7 @@ namespace Managers
             }
         }
         
-        private IEnumerator UnloadScene(ESM_UIClearPolicy clearPolicy, Action onComplete)
+        private IEnumerator UnloadScene(ESM_UIClearPolicy clearPolicy, Action onComplete = null)
         {
             SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
             if (!uiManager)
@@ -123,27 +145,26 @@ namespace Managers
             yield return null;
         }
 
-        private IEnumerator StartFadeIn(SM_SceneCommand command)
+        private void UnloadScene(ESM_UIClearPolicy clearPolicy)
         {
             SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
-            SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
-            if (!uiManager || !tableManager)
+            if (!uiManager)
             {
-                SM_Log.ASSERT(false, "UIManager or TableManager are not exist!!");
-                yield break;
-            }
-
-            SM_UI_DataTable uiTable = (SM_UI_DataTable)tableManager.GetTable(ESM_TableType.UI);
-            if (!uiTable)
-            {
-                SM_Log.ASSERT(false, "UI Table is not exist!!");
+                return;
             }
             
-            GameObject nextScene = uiTable.GetUI(command.NextSceneName);
+            uiManager.PopUI(clearPolicy);
+        }
+
+        private IEnumerator StartFadeIn(SM_SceneCommand command)
+        {
+            GameObject nextScene = GetNextScene(command.NextSceneName);
+            
             if (!nextScene)
             {
                 SM_Log.ASSERT(false, $"There is No Next Scene(UI). ({command.NextSceneName}). Please Check UITable");
             }
+            SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
             uiManager.PushUI(nextScene);
             
             if (nextScene.TryGetComponent<SM_SceneFader>(out var nextFader))
@@ -152,6 +173,25 @@ namespace Managers
             }
         }
         
+        private GameObject GetNextScene(string commandNextSceneName)
+        {
+            SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
+            SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
+            if (!uiManager || !tableManager)
+            {
+                SM_Log.ASSERT(false, "UIManager or TableManager are not exist!!");
+                return null;
+            }
+
+            SM_UI_DataTable uiTable = (SM_UI_DataTable)tableManager.GetTable(ESM_TableType.UI);
+            if (!uiTable)
+            {
+                SM_Log.ASSERT(false, "UI Table is not exist!!");
+            }
+            
+            return uiTable.GetUI(commandNextSceneName);
+        }
+
         private IEnumerator UnloadLoading()
         {
             SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
@@ -162,37 +202,6 @@ namespace Managers
             }
             
             uiManager.PopUI(ESM_UIClearPolicy.ClearTopOnly);
-        }
-        
-        private IEnumerator PlayTransitionEffect(SM_SceneCommand command, bool isOut)
-        {
-            switch (command.TransitionStyle)
-            {
-                case ESM_TransitionType.Fade:
-                {
-                    var fader = FindObjectOfType<SM_SceneFader>();
-                    bool done = false;
-                    if (fader)
-                    {
-                        if (isOut)
-                        {
-                            yield return fader.FadeIn(command.FadeDuration);
-                        }
-                        else
-                        {
-                            yield return fader.FadeOut(command.FadeDuration);
-                        }
-                    }
-
-                    while (!done)
-                    {
-                        yield return null;
-                    }
-                    break;    
-                }
-                default:
-                    break;
-            }
         }
     }
 }

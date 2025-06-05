@@ -3,25 +3,19 @@ using System.Collections.Generic;
 using Installer;
 using Systems;
 using Systems.EventHub;
+using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
 
 namespace Managers
 {
-    public enum ESM_UIType
-    {
-        Regular,
-        Loading,
-        Modal,
-        Popup,
-    }
-
     public enum ESM_UIClearPolicy
     {
+        DoNotClear,
         ClearAllExceptLoading,
         ClearTopOnly,
-        DoNotClear
+        ClearAll,
     }
     
     public class SM_UIManager : MonoBehaviour, ISM_ManagerBase
@@ -32,16 +26,11 @@ namespace Managers
 
         private Stack<GameObject> _uiStack = new();
         
-        [Inject]
-        private void Construct()
-        {
-            SM_GameManager.Instance?.RegisterManager(ESM_Manager.UIManager, this);
-            canvasTransform = GameObject.FindWithTag("Canvas")?.transform;
-        }
-
         [Inject] public void Construct(SignalBus signalBus)
         {
             signalBus.Subscribe<Signal_InitializeManagers>(x => InitManager(x.EventHub));
+            SM_GameManager.Instance?.RegisterManager(ESM_Manager.UIManager, this);
+            canvasTransform = GameObject.FindWithTag("Canvas")?.transform;
         }
         
         public void InitManager(SM_ManagerEventHub eventHub)
@@ -113,6 +102,16 @@ namespace Managers
                     GameObject topScene = _uiStack.Pop();
                     Destroy(topScene);
                     _uiStack.Push(loadingUI);
+                    break;
+                }
+                case ESM_UIClearPolicy.ClearAll:
+                {
+                    while (_uiStack.Count > 0)
+                    {
+                        GameObject ui = _uiStack.Pop();
+                        Destroy(ui);
+                    }
+                    _uiStack.Clear();
                     break;
                 }
                 default:

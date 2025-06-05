@@ -53,6 +53,7 @@ namespace Table
 
     public class SM_CommonEntry : SM_Data
     {
+        public int Key;
         public string TypeName;
         public float Parameter01;
         public float Parameter02;

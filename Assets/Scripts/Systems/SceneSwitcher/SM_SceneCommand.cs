@@ -9,7 +9,6 @@ namespace UI
     }
     public class SM_SceneCommand
     {
-        public string CurrentSceneName; // 현재 씬 이름
         public string NextSceneName; // 다음 씬 이름
         public ESM_LoadingUIType LoadingType; // 로딩 UI 타입
         public float FadeDuration;
@@ -17,14 +16,23 @@ namespace UI
         public ESM_TransitionType TransitionStyle;
         public ESM_UIClearPolicy ClearPolicy;
         
-        public SM_SceneCommand(string current, string next, ESM_LoadingUIType loadingUIType, float fadeDuration,
+        public SM_SceneCommand(string next, ESM_LoadingUIType loadingUIType, float fadeDuration,
             Action onComplete, ESM_TransitionType transitionStyle, ESM_UIClearPolicy clearPolicy)
         {
-            CurrentSceneName = current;
             NextSceneName = next;
             LoadingType = loadingUIType;
             FadeDuration = fadeDuration;
             OnTransitionComplete = onComplete;
+            TransitionStyle = transitionStyle;
+            ClearPolicy = clearPolicy;
+        }
+
+        public SM_SceneCommand(string next, ESM_TransitionType transitionStyle, ESM_UIClearPolicy clearPolicy)
+        {
+            NextSceneName = next;
+            LoadingType = ESM_LoadingUIType.Default;
+            FadeDuration = 0;
+            OnTransitionComplete = null;
             TransitionStyle = transitionStyle;
             ClearPolicy = clearPolicy;
         }
@@ -34,6 +42,7 @@ namespace UI
     {
         Direct,
         Fade,
+        OnlyFadeIn,
         SlideLeft,
         SlideRight,
     }

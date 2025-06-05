@@ -26,14 +26,9 @@ namespace Managers
         [Inject] public void Construct(SignalBus signalBus)
         {
             signalBus.Subscribe<Signal_InitializeManagers>(x => InitManager(x.EventHub));
-        }
-
-        [Inject]
-        private void Construct()
-        {
             SM_GameManager.Instance?.RegisterManager(ESM_Manager.TableManager, this);
         }
-        
+
         public void RegisterTable(ESM_TableType tableType, ISM_DataTable table)
         {
             _tableMap[tableType] = table;
