@@ -7,6 +7,7 @@ public enum ESM_Manager
     SceneManager = 1,
     UIManager = 2,
     TableManager = 3,
+    InputManager = 4,
 }
 
 namespace Systems

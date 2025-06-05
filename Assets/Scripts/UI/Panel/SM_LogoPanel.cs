@@ -16,7 +16,6 @@ namespace UI
             Animator animator = GetComponent<Animator>();
             animator.Play("FadeInAnim");
         }
-
         public void OnLogoFadeOutEnd()
         {
             gameObject.SetActive(false);
