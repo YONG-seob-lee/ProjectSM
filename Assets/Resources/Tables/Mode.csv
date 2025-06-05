@@ -1,5 +1,5 @@
-Key,ModeType,TriggerType,DurationTime
-1,Normal,1,120
-2,Boss,3,0
-3,Normal,1,120
-4,Zombie,2,30
+Key,ModeName,ModeType,TriggerType,TriggerParam
+1,Noemal_01,1,1,120
+2,Boss_01,2,3,0
+3,Normal_02,1,1,120
+4,Zombie_01,3,2,30

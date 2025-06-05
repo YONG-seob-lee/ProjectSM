@@ -22,9 +22,9 @@
         public void OnBeginState() => Begin();
         public void OnExitState() => Exit();
         
-        protected void Begin() {}
-        protected void Exit() {}
+        protected virtual void Begin() {}
+        protected virtual void Exit() {}
         
-        public void Update() {}
+        public virtual void Update() {}
     }
 }

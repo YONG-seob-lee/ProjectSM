@@ -34,7 +34,8 @@ namespace Table
     public class SM_ModeEntry : SM_Data
     {
         public int Key;
-        public string ModeType;
+        public string ModeName;
+        public int ModeType;
         public int TriggerType;
         public int DurationTime;
     }

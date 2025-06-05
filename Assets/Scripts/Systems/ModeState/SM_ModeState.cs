@@ -1,5 +1,6 @@
-﻿using Systems.StateMachine;
-using UnityEngine;
+﻿using Systems.Controller;
+using Systems.EventHub;
+using Systems.StateMachine;
 
 namespace Systems.Scene
 {
@@ -9,67 +10,29 @@ namespace Systems.Scene
         Boss,
         Zombie,
     }
-    public class SM_ModeState : SM_StateBase
+    public abstract class SM_ModeState : SM_StateBase
     {
-        private int _modeType;
-        private float _duration;
-        private float _elapsedTime;
-        private bool _isRunning;
-        private System.Action _onTrigger;
+        protected int _modeType;
+        protected bool _isRunning;
+        protected System.Action _onTrigger;
 
-        public void PostInitialize(float duration)
-        {
-            _duration = duration;
-        }
+        public virtual void PostInitialize(int modeType, float duration) {}
         
-        protected void Begin()
-        {
-            switch ((ESM_ModeType)_modeType)
-            {
-                case ESM_ModeType.Normal:
-                {
-                    _elapsedTime = 0f;
-                    break;
-                }
-                case ESM_ModeType.Boss:
-                {
-                    break;
-                }
-                case ESM_ModeType.Zombie:
-                {
-                    break;
-                }
-                default:
-                    break;
-            }
-            
-            _isRunning = true;
-        }
+        protected override void Begin() {}
 
-        protected void Exit()
-        {
-            _isRunning = false;
-        }
+        protected override void Exit() {}
 
         public void SetCallback(System.Action callback)
         {
             _onTrigger = callback;
         }
-
-        public void Update()
+        public void RegisterInput(SM_ManagerEventHub eventHub)
         {
-            if (!_isRunning)
-            {
-                return;
-            }
-
-            _elapsedTime += Time.deltaTime;
-
-            if (_elapsedTime >= _duration)
-            {
-                _isRunning = false;
-                _onTrigger?.Invoke();
-            }
+            eventHub.OnInputReceived += OnOnInputReceived;
         }
+
+        protected virtual void OnOnInputReceived(string action, EInputState state) { }
+        
+        public override void Update() {}
     }
 }

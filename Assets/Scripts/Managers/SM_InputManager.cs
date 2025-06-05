@@ -10,20 +10,22 @@ namespace Managers
 {
     public class SM_InputManager : MonoBehaviour, ISM_ManagerBase
     {
-        public static event Action<string, EInputState> OnInputAction;
-        
+        [Inject] private SM_ManagerEventHub _eventHub;
         [Inject] public void Construct(SignalBus signalBus)
         {
             signalBus.Subscribe<Signal_InitializeManagers>(x => InitManager(x.EventHub));
             SM_GameManager.Instance.RegisterManager(ESM_Manager.InputManager, this);
         }
 
-        public void InitManager(SM_ManagerEventHub eventHub) { }
+        public void InitManager(SM_ManagerEventHub eventHub)
+        {
+            _eventHub = eventHub;
+        }
         public void DestroyManager() { }
         
         public void NotifyInput(string action, EInputState state)
         {
-            OnInputAction?.Invoke(action, state);
+            _eventHub.BroadcastInput(action, state);
         }
     }
 }

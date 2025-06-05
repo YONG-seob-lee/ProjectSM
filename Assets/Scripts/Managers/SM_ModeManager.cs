@@ -12,6 +12,7 @@ namespace Managers
 {
     public class SM_ModeManager : MonoBehaviour, ISM_ManagerBase
     {
+        private SM_ManagerEventHub _eventHub;
         private SM_StateMachine _modeStateMachine;
         private Queue<int> _modeSequence; // Mode_ID
         private int _currentModeID;
@@ -25,6 +26,7 @@ namespace Managers
         
         public void InitManager(SM_ManagerEventHub eventHub)
         {
+            _eventHub = eventHub;
             _modeStateMachine = new();
             _modeSequence = new();
         }
@@ -81,8 +83,9 @@ namespace Managers
             {
                 int modeID = modeSequence.Dequeue();
                 SM_ModeEntry modeEntry = modeTable.GetModeData(modeID);
-                SM_ModeState newModeState = (SM_ModeState)_modeStateMachine.RegisterState<SM_ModeState>(modeID, modeEntry.ModeType);
-                newModeState?.PostInitialize(modeEntry.DurationTime);
+                SM_ModeState newModeState = (SM_ModeState)_modeStateMachine.RegisterState<SM_ModeState>(modeID, modeEntry.ModeName);
+                newModeState?.PostInitialize(modeEntry.ModeType, modeEntry.DurationTime);
+                newModeState?.RegisterInput(_eventHub);
             }
         }
         
