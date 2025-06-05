@@ -7,7 +7,7 @@ namespace Systems.EventHub
 {
     public class SM_ManagerEventHub : ISM_EventHub
     {
-        public event Action<Scene, LoadSceneMode> OnSceneChanged;
+        public event Action<UnityEngine.SceneManagement.Scene, LoadSceneMode> OnSceneChanged;
         public event Action OnPauseRequested;
         public event Action OnGameOver;
 

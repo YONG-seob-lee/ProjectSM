@@ -15,6 +15,8 @@ public enum ESM_TableType
     PrefabFile,
     UI,
     Item,
+    Mode,
+    ModeSequence,
 }
 
 namespace Managers

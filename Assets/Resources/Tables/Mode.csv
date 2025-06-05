@@ -1,0 +1,5 @@
+Key,ModeType,TriggerType,TriggerParam
+1,Normal,1,120
+2,Boss,3,BossSpawn
+3,Normal,1,120
+4,Zombie,2,30

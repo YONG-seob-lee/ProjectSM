@@ -4,10 +4,10 @@ namespace Systems.EventSignals
 {
     public class SceneLoadedSignal
     {
-        public Scene Scene { get; }
+        public UnityEngine.SceneManagement.Scene Scene { get; }
         public LoadSceneMode LoadMode { get; }
 
-        public SceneLoadedSignal(Scene scene, LoadSceneMode mode)
+        public SceneLoadedSignal(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode)
         {
             Scene = scene;
             LoadMode = mode;

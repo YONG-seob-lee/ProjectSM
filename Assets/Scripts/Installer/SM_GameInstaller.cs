@@ -16,6 +16,7 @@ namespace Installer
         [SerializeField] private SM_UIManager uiManager;
         [SerializeField] private SM_TableManager tableManager;
         [SerializeField] private SM_InputManager inputManager;
+        [SerializeField] private SM_ModeManager modeManager;
         
         // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
@@ -29,13 +30,15 @@ namespace Installer
             Container.DeclareSignal<Signal_InitializeManagers>();
             
             Container.Bind<SM_GameManager>().FromInstance(gameManager).AsSingle();
-            Container.Bind<SM_PlayerController>().FromInstance(playerController).AsSingle();
             
             // tip. 하이라키 오브젝트와 바인딩 해야함.
             Container.Bind().FromInstance(sceneManager).AsSingle();
             Container.Bind().FromInstance(uiManager).AsSingle();
             Container.Bind().FromInstance(tableManager).AsSingle();
             Container.Bind().FromInstance(inputManager).AsSingle();
+            Container.Bind().FromInstance(modeManager).AsSingle();
+            
+            Container.Bind<SM_PlayerController>().FromInstance(playerController).AsSingle();
         }
     }
 

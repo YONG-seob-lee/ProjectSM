@@ -73,21 +73,34 @@ namespace Managers
         }
         private IEnumerator HandleSceneTransition(SM_SceneCommand command)
         {
-            yield return StartFadeOut(command);
-            yield return WaitForLoading(command);
-            yield return StartFadeIn(command);
+            // 1. Make Loading Scene
+            GameObject loadingScene = null;
+            yield return MakeLoadingScene(command, loadingScene);
+            
+            // 2. Start FadeOut
+            yield return StartFadeOut(loadingScene, command.FadeDuration);
+            
+            // 3. Process intermediate course
+            GameObject nextScene = null;
+            yield return WaitForLoading(command, nextScene);
+            
+            // 4. Start FadeIn
+            yield return StartFadeIn(nextScene, command.FadeDuration);  
+            
+            // 5. Destroy LoadingScene
             yield return UnloadLoading();
+            
+            // 6. Complete Event
             command.OnTransitionComplete?.Invoke();
         }
-
-        private IEnumerator StartFadeOut(SM_SceneCommand command)
+        private IEnumerator MakeLoadingScene(SM_SceneCommand command, GameObject loadingUI)
         {
             if (command.TransitionStyle == ESM_TransitionType.OnlyFadeIn)
             {
                 yield break;
             }
             
-            GameObject loadingUI = SM_SystemLibrary.GetLoadingUI(command.LoadingType);
+            loadingUI = SM_SystemLibrary.GetLoadingUI(command.LoadingType);
             if (loadingUI == null)
             {
                 SM_Log.WARNING($"There is no UI ({command.LoadingType.ToString()})");
@@ -95,14 +108,17 @@ namespace Managers
             
             SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
             uiManager?.PushUI(loadingUI);
-            
+        }
+
+        private IEnumerator StartFadeOut(GameObject loadingUI, float fadeDuration)
+        {
             if (loadingUI.TryGetComponent<SM_SceneFader>(out var loadingFader))
             {
-                yield return loadingFader.FadeIn(command.FadeDuration);
+                yield return loadingFader.FadeIn(fadeDuration);
             }
         }
         
-        private IEnumerator WaitForLoading(SM_SceneCommand command)
+        private IEnumerator WaitForLoading(SM_SceneCommand command, GameObject nextScene)
         {
             if (command.TransitionStyle == ESM_TransitionType.OnlyFadeIn)
             {
@@ -116,23 +132,64 @@ namespace Managers
             bool unloadFinished = false;
             
             // 1. 씬 언로드 시작
-            yield return StartCoroutine(UnloadScene(command.ClearPolicy, () => unloadFinished = true));
+            yield return StartCoroutine(UnloadScene(command.ClearPolicy));
 
-            // 2. 최소 로딩시간 보장.
+            // 2. 다음 씬 로드 시작
+            yield return StartCoroutine(MakeNextScene(command, nextScene));
+
+            // 3. Mode 바인딩 to Scene
+            yield return StartCoroutine(MakeMode(command.NextSceneName, () => unloadFinished = true));
+            
+            // 4. 최소 로딩시간 보장.
             while (timer < minLoadingTime)
             {
                 timer += Time.unscaledDeltaTime;
                 yield return null;
             }
 
-            // 3. 아직 로드할게 남았다면 기다림
+            // 5. 아직 로드할게 남았다면 기다림
             while (!unloadFinished)
             {
                 yield return null;
             }
         }
+        private IEnumerator MakeNextScene(SM_SceneCommand command, GameObject nextScene)
+        {
+            nextScene = GetNextScene(command.NextSceneName);
+            
+            if (!nextScene)
+            {
+                SM_Log.ASSERT(false, $"There is No Next Scene(UI). ({command.NextSceneName}). Please Check UITable");
+                yield break;
+            }
+            SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
+            uiManager.PushUI(nextScene);
+            yield return null;
+        }
+
+        private IEnumerator MakeMode(string nextSceneName, Action onComplete = null)
+        {
+            SM_ModeManager modeManager = (SM_ModeManager)SM_GameManager.Instance.GetManager(ESM_Manager.ModeManager);
+            if(!modeManager)
+            {
+                SM_Log.ASSERT(false, "[ModeManager] is not exist!! ");
+                yield break;
+            }
+
+            modeManager.ClearMode();
+            modeManager.RegisterMode(nextSceneName);
+            onComplete?.Invoke();
+            yield return null;
+        }
         
-        private IEnumerator UnloadScene(ESM_UIClearPolicy clearPolicy, Action onComplete = null)
+        private IEnumerator StartFadeIn(GameObject nextScene, float fadeDuration)
+        {
+            if (nextScene.TryGetComponent<SM_SceneFader>(out var nextFader))
+            {
+                yield return nextFader.FadeIn(fadeDuration); // UI 페이드인
+            }
+        }
+        private IEnumerator UnloadScene(ESM_UIClearPolicy clearPolicy)
         {
             SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
             if (!uiManager)
@@ -141,36 +198,7 @@ namespace Managers
             }
             
             uiManager.PopUI(clearPolicy);
-            onComplete?.Invoke();
             yield return null;
-        }
-
-        private void UnloadScene(ESM_UIClearPolicy clearPolicy)
-        {
-            SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
-            if (!uiManager)
-            {
-                return;
-            }
-            
-            uiManager.PopUI(clearPolicy);
-        }
-
-        private IEnumerator StartFadeIn(SM_SceneCommand command)
-        {
-            GameObject nextScene = GetNextScene(command.NextSceneName);
-            
-            if (!nextScene)
-            {
-                SM_Log.ASSERT(false, $"There is No Next Scene(UI). ({command.NextSceneName}). Please Check UITable");
-            }
-            SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
-            uiManager.PushUI(nextScene);
-            
-            if (nextScene.TryGetComponent<SM_SceneFader>(out var nextFader))
-            {
-                yield return nextFader.FadeIn(command.FadeDuration); // UI 페이드인
-            }
         }
         
         private GameObject GetNextScene(string commandNextSceneName)

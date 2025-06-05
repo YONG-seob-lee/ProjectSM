@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,7 +9,7 @@ namespace Systems.Controller
 {
     public class SM_PlayerController : MonoBehaviour
     {
-        [Inject] private SM_InputManager _inputManager;
+        private SM_InputManager _inputManager;
 
         // 
         private Dictionary<string, Key> _actionToKeyMap = new()
@@ -24,7 +25,12 @@ namespace Systems.Controller
         {
             //_actionToKeyMap = SM_UserGameSetting.GetActionKeyMap();
         }
-        
+
+        private void Start()
+        {
+            _inputManager = (SM_InputManager)SM_GameManager.Instance.GetManager(ESM_Manager.InputManager);
+        }
+
         void Update()
         {
             foreach (var (action, key) in _actionToKeyMap)

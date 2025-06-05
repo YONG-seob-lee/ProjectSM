@@ -1,0 +1,10 @@
+Key,SceneName,Sequence_Index,Mode_ID
+1,GameScene_01,0,1
+2,GameScene_01,1,2
+3,GameScene_01,2,3
+4,GameScene_01,3,4
+5,GameScene_02,0,5
+6,GameScene_02,1,6
+7,GameScene_02,2,7
+8,GameScene_02,3,8
+9,GameScene_02,4,9

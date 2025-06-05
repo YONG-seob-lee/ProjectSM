@@ -14,6 +14,8 @@ namespace Installer
         [SerializeField] private SM_PrefabFile_DataTable prefabDataTable;
         [SerializeField] private SM_UI_DataTable uiTable;
         [SerializeField] private SM_Item_DataTable itemTable;
+        [SerializeField] private SM_Mode_DataTable modeTable;
+        [SerializeField] private SM_ModeSequence_DataTable modeSequenceTable;
 
         // ReSharper disable Unity.PerformanceAnalysis
 
@@ -32,6 +34,10 @@ namespace Installer
             tableManager.RegisterTable(ESM_TableType.UI, uiTable);
             Container.Bind<SM_Item_DataTable>().FromInstance(itemTable).AsSingle();
             tableManager.RegisterTable(ESM_TableType.Item, itemTable);
+            Container.Bind<SM_Mode_DataTable>().FromInstance(modeTable).AsSingle();
+            tableManager.RegisterTable(ESM_TableType.Mode, modeTable);
+            Container.Bind<SM_ModeSequence_DataTable>().FromInstance(modeSequenceTable).AsSingle();
+            tableManager.RegisterTable(ESM_TableType.ModeSequence, modeSequenceTable);
         }
     }
 }

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Installer;
 using Systems;
 using Systems.EventHub;
-using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
@@ -29,6 +27,7 @@ namespace Managers
         [Inject] public void Construct(SignalBus signalBus)
         {
             signalBus.Subscribe<Signal_InitializeManagers>(x => InitManager(x.EventHub));
+            // ReSharper disable once Unity.NoNullPropagation
             SM_GameManager.Instance?.RegisterManager(ESM_Manager.UIManager, this);
             canvasTransform = GameObject.FindWithTag("Canvas")?.transform;
         }

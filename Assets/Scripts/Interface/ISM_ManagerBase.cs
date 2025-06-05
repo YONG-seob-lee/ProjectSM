@@ -8,6 +8,7 @@ public enum ESM_Manager
     UIManager = 2,
     TableManager = 3,
     InputManager = 4,
+    ModeManager = 5,
 }
 
 namespace Systems
