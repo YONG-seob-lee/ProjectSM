@@ -15,21 +15,31 @@ namespace Systems.StateMachine
             UnRegisterAllState();
         }
 
-        public void RegisterState<T>(int index, string name)
+        public void Update()
+        {
+            SM_StateBase currentState = GetCurrentState();
+            currentState?.Update();
+        }
+
+        public SM_StateBase RegisterState<T>(int index, string name)
             where T : SM_StateBase
         {
             if (StateEntry.ContainsKey(index))
             {
                 SM_Log.WARNING($"Is Already Exist. [{name}]");
-                return;
+                return null;
             }
 
             SM_StateBase newState = (T)Activator.CreateInstance(typeof(T));
-            if (newState != null)
+            if (newState == null)
             {
-                newState.Initialize(index, name);
-                StateEntry[index] = newState;
+                return null;
             }
+            
+            newState.Initialize(index, name);
+            StateEntry[index] = newState;
+            
+            return newState;
         }
 
         public void UnRegisterAllState()
@@ -48,9 +58,9 @@ namespace Systems.StateMachine
             return StateEntry.GetValueOrDefault(CurrentStateKey);
         }
 
-        public void ChangeState(int index)
+        public SM_StateBase ChangeState(int index)
         {
-            SetState_Internal(index);
+            return SetState_Internal(index);
         }
 
         private SM_StateBase GetState(int stateKey)
@@ -58,7 +68,7 @@ namespace Systems.StateMachine
             return StateEntry.GetValueOrDefault(stateKey);
         }
 
-        private void SetState_Internal(int index)
+        private SM_StateBase SetState_Internal(int index)
         {
             SM_StateBase currentState = GetState(CurrentStateKey);
             if(currentState != null)
@@ -72,6 +82,8 @@ namespace Systems.StateMachine
             {
                 nextState.OnBeginState();
             }
+
+            return nextState;
         }
     }
 }

@@ -14,6 +14,7 @@ namespace Managers
     {
         private SM_StateMachine _modeStateMachine;
         private Queue<int> _modeSequence; // Mode_ID
+        private int _currentModeID;
 
         [Inject] public void Construct(SignalBus signalBus)
         {
@@ -35,23 +36,15 @@ namespace Managers
 
         public void Update()
         {
-            if (_modeStateMachine.GetCurrentState() is SM_ModeState modeState)
-            {
-                if (modeState.IsTriggerSatisfied())
-                {
-                    if (_modeSequence.Count > 0)
-                    {
-                        int nextID = _modeSequence.Dequeue();
-                        _modeStateMachine.ChangeState(nextID);
-                    }
-                }
-            }
+            _modeStateMachine.Update();
         }
         
         public void RegisterMode(string sceneName)
         {
             RegisterType(sceneName);
             RegisterModeState();
+
+            StartMode();
         }
         private void RegisterType(string sceneName)
         {
@@ -83,16 +76,40 @@ namespace Managers
                 return;
             }
             
-            while (_modeSequence.Count > 0)
+            Queue<int> modeSequence = _modeSequence;
+            while (modeSequence.Count > 0)
             {
-                int modeID = _modeSequence.Dequeue();
-                _modeStateMachine.RegisterState<SM_ModeState>(modeID, modeTable.GetModeName(modeID));
+                int modeID = modeSequence.Dequeue();
+                SM_ModeEntry modeEntry = modeTable.GetModeData(modeID);
+                SM_ModeState newModeState = (SM_ModeState)_modeStateMachine.RegisterState<SM_ModeState>(modeID, modeEntry.ModeType);
+                newModeState?.PostInitialize(modeEntry.DurationTime);
             }
+        }
+        
+        private void StartMode()
+        {
+            _currentModeID = _modeSequence.Dequeue();
+            SM_ModeState currentState = (SM_ModeState)_modeStateMachine.ChangeState(_currentModeID);
+            currentState.SetCallback(NextMode);
+        }
+
+        private void NextMode()
+        {
+            if (_modeSequence.Count == 0)
+            {
+                // 모든 스테이지가 종료
+                ClearMode();
+                return;
+            }
+            _currentModeID = _modeSequence.Dequeue();
+            SM_ModeState currentState = (SM_ModeState)_modeStateMachine.ChangeState(_currentModeID);
+            currentState.SetCallback(NextMode);
         }
         public void ClearMode()
         {
             _modeSequence.Clear();
             _modeStateMachine.UnRegisterAllState();
+            _currentModeID = -1;
         }
     }
 }

@@ -2,13 +2,9 @@
 {
     public interface SM_StateInterface
     {
-        public virtual void Initialize(int index, string name) {}
-
         void OnBeginState() {}
         void OnExitState() {}
-        
-        protected void Begin() {}
-        protected void Exit() {}
+        public void Update() {}
     }
     
     public abstract class SM_StateBase : SM_StateInterface
@@ -28,5 +24,7 @@
         
         protected void Begin() {}
         protected void Exit() {}
+        
+        public void Update() {}
     }
 }
