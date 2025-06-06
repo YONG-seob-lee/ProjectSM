@@ -17,6 +17,7 @@ namespace Installer
         [SerializeField] private SM_TableManager tableManager;
         [SerializeField] private SM_InputManager inputManager;
         [SerializeField] private SM_ModeManager modeManager;
+        [SerializeField] private SM_UserSettingManager userSettingManager;
         
         // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
@@ -37,6 +38,7 @@ namespace Installer
             Container.Bind().FromInstance(tableManager).AsSingle();
             Container.Bind().FromInstance(inputManager).AsSingle();
             Container.Bind().FromInstance(modeManager).AsSingle();
+            Container.Bind().FromInstance(userSettingManager).AsSingle();
             
             Container.Bind<SM_PlayerController>().FromInstance(playerController).AsSingle();
         }
