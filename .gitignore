@@ -72,3 +72,6 @@ crashlytics-build.properties
 /httpRequests/
 /dataSources/
 /dataSources.local.xml
+
+# Firebase SDK - Exclude from Git
+/[Aa]ssets/Firebase/
