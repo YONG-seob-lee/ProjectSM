@@ -2,6 +2,7 @@
 using Installer;
 using Systems;
 using Systems.EventHub;
+using Table;
 using UnityEngine;
 using Zenject;
 
@@ -9,13 +10,7 @@ namespace Managers
 {
     public class SM_UserSettingManager : MonoBehaviour, ISM_ManagerBase
     {
-        private readonly Dictionary<string, string> _defaultKeyBindings = new Dictionary<string, string>()
-        {
-            {"MoveUp", "W"},
-            {"MoveDown", "S"},
-            {"MoveLeft", "A"},
-            {"MoveRight", "D"},
-        };
+        private readonly Dictionary<string, string> _defaultKeyBindings = new();
             
         public void Construct(SignalBus signalBus)
         {
@@ -26,6 +21,36 @@ namespace Managers
 
         public void InitManager(SM_ManagerEventHub eventHub)
         {
+            Init_MappingKeyboard();
+            Init_MappingMouse();
+
+            RefreshMapping();
+
+            PlayerPrefs.Save();
+        }
+
+        private void Init_MappingKeyboard()
+        {
+            SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
+
+            for (int i = (int)ESM_CommonType.KBOARD_UP; i <= (int)ESM_CommonType.KBOARD_RIGHT; ++i)
+            {
+                _defaultKeyBindings[((ESM_CommonType)i).ToString()] = tableManager.GetParameter<string>((ESM_CommonType)i);
+            }
+        }
+        private void Init_MappingMouse()
+        {
+            SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
+
+            for (int i = (int)ESM_CommonType.MOUSE_LEFT; i <= (int)ESM_CommonType.MOUSE_RIGHT; ++i)
+            {
+                _defaultKeyBindings[((ESM_CommonType)i).ToString()] = tableManager.GetParameter<string>((ESM_CommonType)i);
+            }
+        }
+
+        private void RefreshMapping()
+        {
+            // PlayerPrefs 의 값으로 Input 키 관리.
             foreach (var pair in _defaultKeyBindings)
             {
                 if (!PlayerPrefs.HasKey($"Key_{pair.Key}"))
@@ -33,10 +58,8 @@ namespace Managers
                     PlayerPrefs.SetString($"Key_{pair.Key}", pair.Value);
                 }
             }
-
-            PlayerPrefs.Save();
         }
-
+        
         public void DestroyManager()
         {
         }

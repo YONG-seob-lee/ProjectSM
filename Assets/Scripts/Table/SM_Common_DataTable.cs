@@ -14,6 +14,8 @@ namespace Table
         KBOARD_DOWN,
         KBOARD_LEFT,
         KBOARD_RIGHT,
+        MOUSE_LEFT,
+        MOUSE_RIGHT
     }
 
     public enum ESM_ParamType
