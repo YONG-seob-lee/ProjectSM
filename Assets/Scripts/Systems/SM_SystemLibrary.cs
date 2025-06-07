@@ -83,6 +83,8 @@ namespace Systems
 
         private static object ConvertValue(Type type, string raw)
         {
+            if (raw.Length <= 0) return default;
+            
             if (type == typeof(int)) return int.Parse(raw);
             if (type == typeof(float)) return float.Parse(raw);
             if (type == typeof(string)) return raw;

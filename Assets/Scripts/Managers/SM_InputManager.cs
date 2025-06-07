@@ -1,5 +1,4 @@
-﻿using System;
-using Installer;
+﻿using Installer;
 using Systems;
 using Systems.Controller;
 using Systems.EventHub;
