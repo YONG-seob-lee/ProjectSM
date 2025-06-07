@@ -8,8 +8,12 @@ namespace Table
 {
     public enum ESM_CommonType
     {
-        LOADING_TIME,
-        FADE_DURATION_TIME
+        LOADING_TIME = 0,
+        FADE_DURATION_TIME,
+        KBOARD_UP,
+        KBOARD_DOWN,
+        KBOARD_LEFT,
+        KBOARD_RIGHT,
     }
 
     public enum ESM_ParamType
@@ -31,21 +35,34 @@ namespace Table
             }
         }
 
-        public float GetParameter(ESM_CommonType commonType, ESM_ParamType paramType)
+        public T GetParameter<T>(ESM_CommonType commonType, ESM_ParamType paramType)
         {
             SM_CommonEntry commonEntry = DataMap.FirstOrDefault(x => x.Value.TypeName == commonType.ToString()).Value;
 
+            object result = null;
+            
             switch (paramType)
             {
                 case ESM_ParamType.Param01:
-                    return commonEntry.Parameter01;
+                    result = commonEntry.Parameter01;
+                    break;
                 case ESM_ParamType.Param02:
-                    return commonEntry.Parameter02;
+                    result = commonEntry.Parameter02;
+                    break;
                 case ESM_ParamType.Param03:
-                    return commonEntry.Parameter03;
+                    result = commonEntry.Parameter03;
+                    break;
                 default:
-                    return -1f;
+                    break;
             }
+
+            if (result is T typedResult)
+            {
+                return typedResult;
+            }
+            
+            SM_Log.ERROR($"타입 변환 실패: {result?.GetType().Name} → {typeof(T).Name}");
+            return default;
         }
 
         public void Clear() => DataMap.Clear();
@@ -56,7 +73,7 @@ namespace Table
         public int Key;
         public string TypeName;
         public float Parameter01;
-        public float Parameter02;
-        public float Parameter03;
+        public string Parameter02;
+        public int Parameter03;
     }
 }

@@ -29,7 +29,7 @@ namespace UI
             var command = new SM_SceneCommand(
                 next: SM_HUDPanel.GetName(),
                 loadingUIType: ESM_LoadingUIType.Default,
-                fadeDuration: tableManager ? tableManager.GetParameter(ESM_CommonType.FADE_DURATION_TIME) : 1f,
+                fadeDuration: tableManager ? tableManager.GetParameter<float>(ESM_CommonType.FADE_DURATION_TIME) : 1f,
                 onComplete: () =>
                 {
                     SM_Log.INFO("메인 HUD 이동 완료");

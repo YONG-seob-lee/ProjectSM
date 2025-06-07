@@ -67,14 +67,14 @@ namespace Managers
         }
         public void DestroyManager() { }
 
-        public float GetParameter(ESM_CommonType commonType, ESM_ParamType paramType = ESM_ParamType.Param01)
+        public T GetParameter<T>(ESM_CommonType commonType, ESM_ParamType paramType = ESM_ParamType.Param01)
         {
             SM_Common_DataTable commonDataTable = (SM_Common_DataTable)GetTable(ESM_TableType.Common);
             if (!commonDataTable)
             {
-                return -1f;
+                return default;
             }
-            return commonDataTable.GetParameter(commonType, paramType);
+            return commonDataTable.GetParameter<T>(commonType, paramType);
         }
 
         private void TestDebug()

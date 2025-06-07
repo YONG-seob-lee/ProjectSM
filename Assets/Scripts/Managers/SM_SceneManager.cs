@@ -144,7 +144,7 @@ namespace Managers
         {
             SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
             
-            float minLoadingTime = tableManager ? tableManager.GetParameter(ESM_CommonType.LOADING_TIME) : 2f;
+            float minLoadingTime = tableManager ? tableManager.GetParameter<float>(ESM_CommonType.LOADING_TIME) : 2f;
             float timer = 0f;
             bool unloadFinished = false;
             
