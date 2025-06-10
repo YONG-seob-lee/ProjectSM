@@ -2,6 +2,7 @@
 using Systems.Controller;
 using Systems.EventHub;
 using Systems.EventSignals;
+using Systems.Server;
 using UnityEngine;
 using Zenject;
 
@@ -9,6 +10,7 @@ namespace Installer
 {
     public class SM_GameInstaller : MonoInstaller
     {
+        // Client
         [SerializeField] private SM_GameManager gameManager;
         [SerializeField] private SM_PlayerController playerController;
         
@@ -18,6 +20,10 @@ namespace Installer
         [SerializeField] private SM_InputManager inputManager;
         [SerializeField] private SM_ModeManager modeManager;
         [SerializeField] private SM_UserSettingManager userSettingManager;
+        
+        // Server
+        [SerializeField] private SM_FirebaseDBManager dBManager;
+        [SerializeField] private SM_FirebaseManager firebaseManager;
         
         // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
@@ -39,6 +45,8 @@ namespace Installer
             Container.Bind().FromInstance(inputManager).AsSingle();
             Container.Bind().FromInstance(modeManager).AsSingle();
             Container.Bind().FromInstance(userSettingManager).AsSingle();
+            Container.Bind().FromInstance(dBManager).AsSingle();
+            Container.Bind().FromInstance(firebaseManager).AsSingle();
             
             Container.Bind<SM_PlayerController>().FromInstance(playerController).AsSingle();
         }

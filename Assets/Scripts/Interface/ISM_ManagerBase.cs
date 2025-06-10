@@ -9,6 +9,8 @@ public enum ESM_Manager
     TableManager = 3,
     InputManager = 4,
     ModeManager = 5,
+    DBManager = 6,
+    FirebaseManager = 7,
 }
 
 namespace Systems
