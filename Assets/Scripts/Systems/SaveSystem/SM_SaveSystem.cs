@@ -4,7 +4,7 @@ using File = System.IO.File;
 
 namespace Systems.SaveSystem
 {
-    public static class SM_SaveSyatem
+    public static class SM_SaveSystem
     {
         private static readonly string SavePath = Application.persistentDataPath + "/save.json";
 
@@ -18,7 +18,8 @@ namespace Systems.SaveSystem
         {
             if (!File.Exists(SavePath))
             {
-                
+                SM_Log.ERROR("There is no save file(json). please check path. [/save]");
+                return null;
             }
 
             string json = File.ReadAllText(SavePath);
