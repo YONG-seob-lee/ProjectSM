@@ -22,6 +22,7 @@ namespace Installer
         [SerializeField] private SM_UserSettingManager userSettingManager;
         
         // Server
+        [SerializeField] private SM_FirebaseInitializer firebaseInitializer;
         [SerializeField] private SM_FirebaseDBManager dBManager;
         [SerializeField] private SM_FirebaseManager firebaseManager;
         
@@ -34,9 +35,12 @@ namespace Installer
             Container.Bind<SM_ManagerEventHub>().AsSingle();
             Container.BindSignal<SceneLoadedSignal>().ToMethod<SM_ManagerEventHub>(x => x.OnSceneLoadedSignalReceived).FromResolve();
 
+            Container.DeclareSignal<Signal_FirebaseReady>();
             Container.DeclareSignal<Signal_InitializeManagers>();
             
             Container.Bind<SM_GameManager>().FromInstance(gameManager).AsSingle();
+
+            Container.Bind<SM_FirebaseInitializer>().FromInstance(firebaseInitializer).AsSingle();
             
             // tip. 하이라키 오브젝트와 바인딩 해야함.
             Container.Bind().FromInstance(sceneManager).AsSingle();
@@ -49,16 +53,6 @@ namespace Installer
             Container.Bind().FromInstance(firebaseManager).AsSingle();
             
             Container.Bind<SM_PlayerController>().FromInstance(playerController).AsSingle();
-        }
-    }
-
-    public class Signal_InitializeManagers
-    {
-        public SM_ManagerEventHub EventHub;
-
-        public Signal_InitializeManagers(SM_ManagerEventHub eventHub)
-        {
-            EventHub = eventHub;
         }
     }
 }

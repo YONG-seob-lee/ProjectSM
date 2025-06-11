@@ -1,4 +1,5 @@
-﻿using Firebase.Database;
+﻿using Firebase;
+using Firebase.Database;
 using Firebase.Extensions;
 using Installer;
 using Managers;
@@ -16,21 +17,28 @@ namespace Systems.Server
         [Inject]
         public void Construct(SignalBus signalBus)
         {
+            signalBus.Subscribe<Signal_FirebaseReady>(OnFirebaseReady);
             signalBus.Subscribe<Signal_InitializeManagers>(x => InitManager(x.EventHub));
             
             // ReSharper disable once Unity.NoNullPropagation
             SM_GameManager.Instance?.RegisterManager(ESM_Manager.DBManager, this);
         }
+
+        public void OnFirebaseReady()
+        {
+            _dbRef = FirebaseDatabase.DefaultInstance.RootReference;
+            SM_Log.INFO("Firebase DB 연결됨");
+        }
         public void InitManager(SM_ManagerEventHub eventHub)
         {
             _eventHub = eventHub;
-            _dbRef = FirebaseDatabase.DefaultInstance.RootReference;
-            
+            #if !UNITY_EDITOR
             // 데이터 저장
             SavePlayerName("dydtjql123", "뇽서비");
             
             // 데이터 읽기
             LoadPlayerName("dydtjql123");
+            #endif
         }
         public void DestroyManager()
         {

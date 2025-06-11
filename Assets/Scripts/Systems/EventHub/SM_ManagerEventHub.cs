@@ -22,7 +22,17 @@ namespace Systems.EventHub
         
         public event Action OnPauseRequested;
         public event Action OnGameOver;
-
-
     }
+    
+    public class Signal_InitializeManagers
+    {
+        public SM_ManagerEventHub EventHub;
+
+        public Signal_InitializeManagers(SM_ManagerEventHub eventHub)
+        {
+            EventHub = eventHub;
+        }
+    }
+    
+    public class Signal_FirebaseReady { }
 }

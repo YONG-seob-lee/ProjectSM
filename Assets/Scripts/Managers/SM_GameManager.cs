@@ -68,6 +68,9 @@ namespace Managers
         
         private void Start_Internal()
         {
+            #if !UNITY_EDITOR
+            _signalBus.Fire(new Signal_FirebaseReady());
+            #endif
             _signalBus.Fire(new Signal_InitializeManagers(_eventHub));
     
             if(GetManager(ESM_Manager.SceneManager) is SM_SceneManager sceneManager)
