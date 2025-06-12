@@ -17,6 +17,7 @@ public enum ESM_TableType
     Item,
     Mode,
     ModeSequence,
+    EnemyUnit,
 }
 
 namespace Managers

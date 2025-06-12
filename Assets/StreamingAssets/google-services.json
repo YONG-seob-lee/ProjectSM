@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "134499853093",
+    "project_id": "projectsm-1bcc7",
+    "storage_bucket": "projectsm-1bcc7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:134499853093:android:defd2b8f5718757ba470cc",
+        "android_client_info": {
+          "package_name": "com.TeamSagong.ProjectSM"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMvDz5YVEKoPyejseT_jKEMAtaPZnqCzo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

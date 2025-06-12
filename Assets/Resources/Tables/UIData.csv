@@ -1,4 +1,5 @@
 Key,UIName,PrefabKey
-1,Fade_Panel,1
-2,HUD_Panel,2
-3,Logo_Panel,3
+1,Fade,1
+2,Logo,2
+3,Lobby,3
+4,HUD,4
