@@ -18,6 +18,8 @@ namespace UI
         }
         public void OnLogoFadeOutEnd()
         {
+            Animator animator = GetComponent<Animator>();
+            animator.enabled = false;
             gameObject.SetActive(false);
             
             SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
