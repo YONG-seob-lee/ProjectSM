@@ -11,15 +11,15 @@ public enum ESM_Manager
     ModeManager = 5,
     DBManager = 6,
     FirebaseManager = 7,
+    UnitManager = 8,
 }
 
 namespace Systems
 {
     public interface ISM_ManagerBase
     {
-        void InitManager(SM_ManagerEventHub eventHub);
-
         void Construct(SignalBus signalBus);
+        void InitManager(SM_ManagerEventHub eventHub);
         void DestroyManager();
     }
 }

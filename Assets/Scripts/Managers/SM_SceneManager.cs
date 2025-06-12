@@ -83,12 +83,8 @@ namespace Managers
         {
             if (command.TransitionStyle == ESM_TransitionType.Fade)
             {
-                // 1. Make Loading Scene
-                GameObject loadingScene = null;
-                yield return MakeLoadingScene(command, loadingScene);
-            
-                // 2. Start FadeOut
-                yield return StartFadeOut(loadingScene, command.FadeDuration);
+                // 1. Make Loading Scene, 2. Start FadeOut
+                yield return StartFadeOut(command.LoadingType, command.FadeDuration);
             
                 // 3. Process intermediate course
                 GameObject nextScene = null;
@@ -112,27 +108,28 @@ namespace Managers
                 }
                 
                 yield return StartFadeIn(nextScene, command.FadeDuration);  
-                yield return UnloadLoading();
-                command.OnTransitionComplete?.Invoke();  
+                yield return UnloadLoading(ESM_UIClearPolicy.ClearAllExceptTop);
+                command.OnTransitionComplete?.Invoke();
             }
         }
-        private IEnumerator MakeLoadingScene(SM_SceneCommand command, GameObject loadingUI)
+        private GameObject MakeLoadingScene(ESM_LoadingUIType loadingType)
         {
-            loadingUI = SM_SystemLibrary.GetLoadingUI(command.LoadingType);
+            GameObject loadingUI = SM_SystemLibrary.GetLoadingUI(loadingType);
             if (loadingUI == null)
             {
-                SM_Log.WARNING($"There is no UI ({command.LoadingType.ToString()})");
-                yield break;
+                SM_Log.WARNING($"There is no UI ({loadingType.ToString()})");
+                return null;
             }
             
             SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
             uiManager?.PushUI(loadingUI);
 
-            yield return null;
+            return loadingUI;
         }
 
-        private IEnumerator StartFadeOut(GameObject loadingUI, float fadeDuration)
+        private IEnumerator StartFadeOut(ESM_LoadingUIType loadingType, float fadeDuration)
         {
+            GameObject loadingUI = MakeLoadingScene(loadingType);
             if (loadingUI.TryGetComponent<SM_SceneFader>(out var loadingFader))
             {
                 yield return loadingFader.FadeIn(fadeDuration);
@@ -148,16 +145,18 @@ namespace Managers
             bool unloadFinished = false;
             
             // 1. 씬 언로드 시작
-            yield return StartCoroutine(UnloadScene(command.ClearPolicy));
+            yield return StartCoroutine(UnloadScene(ESM_UIClearPolicy.ClearAllExceptLoadingUI));
 
             // 2. 다음 씬 로드 시작
             GameObject nextScene = MakeNextScene(command);
+            CanvasGroup CG = nextScene.GetComponent<CanvasGroup>();
+            CG.alpha = 0f;
             onLoaded?.Invoke(nextScene);
             yield return null;
 
             // 3. Mode 바인딩 to Scene
             yield return StartCoroutine(MakeMode(command.NextSceneName, () => unloadFinished = true));
-            
+
             // 4. 최소 로딩시간 보장.
             while (timer < minLoadingTime)
             {
@@ -239,7 +238,7 @@ namespace Managers
             return uiTable.GetUI(commandNextSceneName);
         }
 
-        private IEnumerator UnloadLoading()
+        private IEnumerator UnloadLoading(ESM_UIClearPolicy clearPolicy = ESM_UIClearPolicy.ClearOnlySecond)
         {
             SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
             if (uiManager == null)
@@ -248,7 +247,7 @@ namespace Managers
                 yield break;
             }
             
-            uiManager.PopUI(ESM_UIClearPolicy.ClearTopOnly);
+            uiManager.PopUI(clearPolicy);
         }
     }
 }

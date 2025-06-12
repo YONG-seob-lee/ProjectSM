@@ -1,4 +1,9 @@
 Key,Directory_Key,Prefab_FileName
 1,4,Fade_Panel
-2,4,HUD_Panel
-3,4,Logo_Panel
+2,4,Logo_Panel
+3,4,Lobby_Panel
+4,4,HUD_Panel
+1001,1,GoblinFire_01
+1002,1,GoblinFire_02
+1003,1,GoblinFire_03
+1004,1,GoblinFire_04

@@ -26,7 +26,7 @@ namespace UI
         {
             float elapsed = 0f;
             canvasGroup.alpha = from;
-            canvasGroup.blocksRaycasts = true;
+            canvasGroup.blocksRaycasts = false;
 
             while (elapsed < duration)
             {
@@ -36,7 +36,7 @@ namespace UI
             }
 
             canvasGroup.alpha = to;
-            canvasGroup.blocksRaycasts = false;
+            canvasGroup.blocksRaycasts = true;
         }
     }
 }

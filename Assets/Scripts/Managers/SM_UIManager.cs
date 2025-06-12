@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Installer;
 using Systems;
 using Systems.EventHub;
 using UnityEngine;
@@ -11,8 +10,9 @@ namespace Managers
     public enum ESM_UIClearPolicy
     {
         DoNotClear,
-        ClearAllExceptLoading,
-        ClearTopOnly,
+        ClearAllExceptTop,
+        ClearOnlySecond,
+        ClearAllExceptLoadingUI,
         ClearAll,
     }
     
@@ -62,7 +62,9 @@ namespace Managers
 
         public void PushUI(GameObject ui)
         {
-            ui.transform.SetParent(GameObject.FindWithTag("Canvas")?.transform, false);
+            var canvas = GameObject.FindWithTag("Canvas")?.transform;
+            ui.transform.SetParent(canvas, false);
+            ui.transform.SetAsLastSibling();
             ui.SetActive(true);
             _uiStack.Push(ui);
         }
@@ -76,31 +78,60 @@ namespace Managers
             
             switch (clearPolicy)
             {
-                case ESM_UIClearPolicy.ClearAllExceptLoading:
+                case ESM_UIClearPolicy.ClearAllExceptTop:
                 {
-                    GameObject loadingUI = _uiStack.Pop();
-
+                    GameObject topUI = _uiStack.Pop();
+                    
                     while (_uiStack.Count > 0)
                     {
                         GameObject ui = _uiStack.Pop();
                         Destroy(ui);
                     }
-                    
                     _uiStack.Clear();
-                    _uiStack.Push(loadingUI);
+
+                    if (topUI != null)
+                    {
+                        _uiStack.Push(topUI);
+                    }
                     break;
                 }
-                case ESM_UIClearPolicy.ClearTopOnly:
+                case ESM_UIClearPolicy.ClearAllExceptLoadingUI:
+                {
+                    GameObject loadingUI = null;
+                    
+                    while (_uiStack.Count > 0)
+                    {
+                        GameObject ui = _uiStack.Pop();
+                        if (ui.CompareTag("LoadingUI"))
+                        {
+                            loadingUI = ui;
+                            continue;
+                        }
+                        Destroy(ui);
+                    }
+                    _uiStack.Clear();
+
+                    if (loadingUI)
+                    {
+                        _uiStack.Push(loadingUI);
+                    }
+                    break;
+                }
+                case ESM_UIClearPolicy.ClearOnlySecond:
                 {
                     if (_uiStack.Count < 2)
                     {
                         return;
                     }
                     
-                    GameObject loadingUI = _uiStack.Pop();
-                    GameObject topScene = _uiStack.Pop();
-                    Destroy(topScene);
-                    _uiStack.Push(loadingUI);
+                    GameObject topUI = _uiStack.Pop();
+                    GameObject secondUI = _uiStack.Pop();
+                    Destroy(secondUI);
+
+                    if (topUI != null)
+                    {
+                        _uiStack.Push(topUI);
+                    }
                     break;
                 }
                 case ESM_UIClearPolicy.ClearAll:

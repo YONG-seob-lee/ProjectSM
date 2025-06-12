@@ -1,13 +1,12 @@
 using System;
 using Systems;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace UI.Base
 {
     public abstract class SM_ButtonBase<TEnum> : MonoBehaviour where TEnum : Enum
     {
-        [SerializeField] private Button _button;
+        [SerializeField] private UnityEngine.UI.Button _button;
         
         public TEnum ButtonType { get; protected set; }
 
@@ -17,7 +16,7 @@ namespace UI.Base
 
             if (_button == null)
             {
-                _button = GetComponent<Button>();
+                _button = GetComponent<UnityEngine.UI.Button>();
             }
 
             if (_button != null)
@@ -30,7 +29,7 @@ namespace UI.Base
             }
         }
 
-        protected abstract void OnClick();
+        public abstract void OnClick();
 
         protected void OnDestroy()
         {

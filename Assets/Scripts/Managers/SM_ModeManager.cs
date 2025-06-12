@@ -38,15 +38,18 @@ namespace Managers
 
         public void Update()
         {
-            _modeStateMachine.Update();
+            //_modeStateMachine.Update();
         }
         
         public void RegisterMode(string sceneName)
         {
             RegisterType(sceneName);
-            RegisterModeState();
+            bool bRegisterSuccess = RegisterModeState();
 
-            StartMode();
+            if (bRegisterSuccess)
+            {
+                StartMode();
+            }
         }
         private void RegisterType(string sceneName)
         {
@@ -63,19 +66,24 @@ namespace Managers
                 _modeSequence = modeSequenceTable.GetModeSequence(sceneName);
             }
         }
-        private void RegisterModeState()
+        private bool RegisterModeState()
         {
+            if (_modeSequence == null)
+            {
+                return false;
+            }
+            
             SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
             if (!tableManager)
             {
                 SM_Log.WARNING("TableManager is not exist!!");
-                return;
+                return false;
             }
             SM_Mode_DataTable modeTable = (SM_Mode_DataTable)tableManager.GetTable(ESM_TableType.Mode);
             if (!modeTable)
             {
                 SM_Log.WARNING("ModeTable is not exist!!");
-                return;
+                return false;
             }
             
             Queue<int> modeSequence = _modeSequence;
@@ -87,6 +95,8 @@ namespace Managers
                 newModeState?.PostInitialize(modeEntry.ModeType, modeEntry.DurationTime);
                 newModeState?.RegisterInput(_eventHub);
             }
+            
+            return true;
         }
         
         private void StartMode()
