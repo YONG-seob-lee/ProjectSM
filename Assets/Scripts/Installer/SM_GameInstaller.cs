@@ -21,6 +21,7 @@ namespace Installer
         [SerializeField] private SM_ModeManager modeManager;
         [SerializeField] private SM_UserSettingManager userSettingManager;
         [SerializeField] private SM_UnitManager unitManager;
+        [SerializeField] private SM_GridManager gridManager;
         
         // Server
         [SerializeField] private SM_FirebaseInitializer firebaseInitializer;
@@ -53,6 +54,7 @@ namespace Installer
             Container.Bind().FromInstance(dBManager).AsSingle();
             Container.Bind().FromInstance(firebaseManager).AsSingle();
             Container.Bind().FromInstance(unitManager).AsSingle();
+            Container.Bind().FromInstance(gridManager).AsSingle();
             
             Container.Bind<SM_PlayerController>().FromInstance(playerController).AsSingle();
         }
