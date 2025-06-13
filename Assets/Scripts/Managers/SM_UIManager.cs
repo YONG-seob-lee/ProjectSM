@@ -60,6 +60,11 @@ namespace Managers
             }
         }
 
+        public void GetUI(string uiName)
+        {
+            
+        }
+
         public void PushUI(GameObject ui)
         {
             var canvas = GameObject.FindWithTag("Canvas")?.transform;

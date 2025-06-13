@@ -34,15 +34,18 @@ namespace Installer
             SignalBusInstaller.Install(Container);
         
             Container.DeclareSignal<SceneLoadedSignal>();
-            Container.Bind<SM_ManagerEventHub>().AsSingle();
-            Container.BindSignal<SceneLoadedSignal>().ToMethod<SM_ManagerEventHub>(x => x.OnSceneLoadedSignalReceived).FromResolve();
-
             Container.DeclareSignal<Signal_FirebaseReady>();
             Container.DeclareSignal<Signal_InitializeManagers>();
+
+            var eventHub = new SM_ManagerEventHub();
+            SM_GlobalEventHub.Initialize(eventHub);
+            Container.Bind<SM_ManagerEventHub>().FromInstance(eventHub).AsSingle();
+            Container.BindSignal<SceneLoadedSignal>().ToMethod<SM_ManagerEventHub>(x => x.OnSceneLoadedSignalReceived).FromResolve();
+
             
             Container.Bind<SM_GameManager>().FromInstance(gameManager).AsSingle();
+            Container.Bind<SM_PlayerController>().FromInstance(playerController).AsSingle();
 
-            Container.Bind<SM_FirebaseInitializer>().FromInstance(firebaseInitializer).AsSingle();
             
             // tip. 하이라키 오브젝트와 바인딩 해야함.
             Container.Bind().FromInstance(sceneManager).AsSingle();
@@ -51,12 +54,12 @@ namespace Installer
             Container.Bind().FromInstance(inputManager).AsSingle();
             Container.Bind().FromInstance(modeManager).AsSingle();
             Container.Bind().FromInstance(userSettingManager).AsSingle();
-            Container.Bind().FromInstance(dBManager).AsSingle();
-            Container.Bind().FromInstance(firebaseManager).AsSingle();
             Container.Bind().FromInstance(unitManager).AsSingle();
             Container.Bind().FromInstance(gridManager).AsSingle();
             
-            Container.Bind<SM_PlayerController>().FromInstance(playerController).AsSingle();
+            Container.Bind<SM_FirebaseInitializer>().FromInstance(firebaseInitializer).AsSingle();
+            Container.Bind().FromInstance(firebaseManager).AsSingle();
+            Container.Bind().FromInstance(dBManager).AsSingle();
         }
     }
 }

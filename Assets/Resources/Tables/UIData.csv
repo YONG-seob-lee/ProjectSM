@@ -1,5 +1,5 @@
-Key,UIName,PrefabKey
-1,Fade,1
-2,Logo,2
-3,Lobby,3
-4,HUD,4
+Key,UIName,PrefabKey,RenderMode
+1,Fade,1,0
+2,Logo,2,0
+3,Lobby,3,0
+4,HUD,4,1

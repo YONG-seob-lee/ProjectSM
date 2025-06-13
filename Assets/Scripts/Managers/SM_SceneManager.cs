@@ -95,6 +95,8 @@ namespace Managers
             
                 // 5. Destroy LoadingScene
                 yield return UnloadLoading();
+
+                yield return PostTransition(command.NextSceneName);
             
                 // 6. Complete Event
                 command.OnTransitionComplete?.Invoke();   
@@ -248,6 +250,42 @@ namespace Managers
             }
             
             uiManager.PopUI(clearPolicy);
+        }
+        
+        private IEnumerator PostTransition(string nextSceneName)
+        {
+            SM_TableManager tableManager  = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
+            if (!tableManager)
+            {
+                SM_Log.ASSERT(false , "[TableManager] is not exist!!");
+                yield break;
+            }
+
+            SM_UI_DataTable uITable = (SM_UI_DataTable)tableManager.GetTable(ESM_TableType.UI);
+            if (!uITable)
+            {
+                SM_Log.ASSERT(false , "[UI Table] is not exist!!");
+                yield break;
+            }
+
+            ESM_RenderMode renderMode = uITable.GetRenderMode(nextSceneName);
+            
+            GameObject canvasObject = GameObject.FindWithTag("Canvas");
+            if (canvasObject)
+            {
+                Canvas canvas = canvasObject.GetComponent<Canvas>();
+                if (canvas)
+                {
+                    if (renderMode == ESM_RenderMode.Overlay)
+                    {
+                        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                    }
+                    else if(renderMode == ESM_RenderMode.Camera)
+                    {
+                        canvas.renderMode = RenderMode.ScreenSpaceCamera;
+                    }
+                }
+            }
         }
     }
 }

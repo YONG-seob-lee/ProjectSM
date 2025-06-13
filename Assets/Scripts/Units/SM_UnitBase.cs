@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace Characters
 {
+    [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(SpriteRenderer))]
     public abstract class SM_UnitBase : MonoBehaviour
     {
         private ESM_UnitType _unitType;

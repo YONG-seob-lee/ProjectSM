@@ -5,5 +5,5 @@ Key,TypeName,Parameter01,Parameter02,Parameter03
 4,KBOARD_DOWN,,S,
 5,KBOARD_LEFT,,A,
 6,KBOARD_RIGHT,,D,
-7,MOUSE_LEFT,,,
-8,MOUSE_RIGHT,,,
+7,MOUSE_LEFT,,LeftButton,
+8,MOUSE_RIGHT,,RightButton,

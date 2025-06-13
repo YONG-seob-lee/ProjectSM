@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Zenject;
 
 namespace Systems.Controller
 {
@@ -21,9 +20,20 @@ namespace Systems.Controller
             { "Interact", Key.E }
         };
 
-        void InitializeInputMap()
+        public void InitializeInputMap()
         {
-            //_actionToKeyMap = SM_UserGameSetting.GetActionKeyMap();
+            SM_UserSettingManager usManager = (SM_UserSettingManager)SM_GameManager.Instance.GetManager(ESM_Manager.UserSettingManager);
+            if (!usManager)
+            {
+                SM_Log.ASSERT(false, "[UserSettingManager] is not Exist!!");
+                return;
+            }
+
+            Dictionary<string, Key> parsingMappingKey = usManager.GetTotalKeyBinding();
+            if (parsingMappingKey is { Count: > 0 })
+            {
+                _actionToKeyMap = usManager.GetTotalKeyBinding();
+            }
         }
 
         private void Start()
@@ -39,11 +49,17 @@ namespace Systems.Controller
                 if (control == null) continue;
 
                 if (control.wasPressedThisFrame)
+                {
                     Dispatch(action, EInputState.Pressed);
+                }
                 else if (control.wasReleasedThisFrame)
+                {
                     Dispatch(action, EInputState.Released);
+                }
                 else if (control.isPressed)
+                {
                     Dispatch(action, EInputState.Held);
+                }
             }
         }
 

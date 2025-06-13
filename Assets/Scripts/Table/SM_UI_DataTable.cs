@@ -7,6 +7,12 @@ using UnityEngine;
 
 namespace Table
 {
+    public enum ESM_RenderMode
+    {
+        Overlay = 0,
+        Camera = 1,
+    }
+    
 [CreateAssetMenu(fileName = "UIDataTable", menuName = "Tables/UI Data Table")]
     public class SM_UI_DataTable : ScriptableObject, ISM_DataTable
     {
@@ -38,6 +44,11 @@ namespace Table
 
             return Instantiate(Resources.Load<GameObject>(prefabPath));
         }
+
+        public ESM_RenderMode GetRenderMode(string nextSceneName)
+        {
+            return (ESM_RenderMode)DataMap.FirstOrDefault(x => x.Value.UIName == nextSceneName).Value.RenderMode;
+        }
     }
 }
 
@@ -46,4 +57,5 @@ public class SM_UIEntry : SM_Data
     public int Key;
     public string UIName;
     public int PrefabKey;
+    public int RenderMode;
 }

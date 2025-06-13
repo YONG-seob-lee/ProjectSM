@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Installer;
 using Systems;
 using Systems.EventHub;
 using Table;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Zenject;
 
 namespace Managers
@@ -64,6 +64,21 @@ namespace Managers
         {
         }
 
+        public Dictionary<string, Key> GetTotalKeyBinding()
+        {
+            Dictionary<string, Key> currentBindings = new();
+
+            foreach (var pair in _defaultKeyBindings)
+            {
+                if (System.Enum.TryParse(pair.Value, out Key key))
+                {
+                    currentBindings[pair.Key] = key;
+                }
+            }
+
+            return currentBindings;
+        }
+        
         public string GetKeyBinding(string action)
         {
             return PlayerPrefs.GetString($"Key_{action}", _defaultKeyBindings.GetValueOrDefault(action, "None"));
