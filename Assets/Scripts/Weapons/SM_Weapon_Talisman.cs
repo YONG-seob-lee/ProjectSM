@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections;
-using Characters;
+﻿using System.Collections;
+using Units;
 using UnityEngine;
 
-namespace Weapon
+namespace Weapons
 {
     public class SM_Weapon_Talisman : SM_WeaponBase
     {

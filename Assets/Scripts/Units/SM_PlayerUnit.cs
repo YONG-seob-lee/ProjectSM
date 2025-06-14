@@ -1,12 +1,14 @@
-﻿using Managers;
+﻿using Camera;
+using Managers;
 using Systems.Controller;
 using Systems.EventHub;
 using UnityEngine;
 
-namespace Characters
+namespace Units
 {
     public class SM_PlayerUnit : SM_UnitBase
     {
+        [SerializeField] private SM_Camera_MainFollow mainCamera;
         private Vector2 _rawInput = Vector2.zero;
         private bool bInitialize = false;
 
@@ -14,6 +16,11 @@ namespace Characters
         {
             base.Initialize(unitType);
             SM_GlobalEventHub.StageHub.OnInputReceived += OnInputReceived;
+
+            mainCamera = FindAnyObjectByType<SM_Camera_MainFollow>();
+            mainCamera.SetFollowTarget(transform);
+            mainCamera.SetLookAtTarget(transform);
+            mainCamera.Activate();
         }
 
         private void OnDestroy()

@@ -7,6 +7,7 @@ using Table;
 using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 using Zenject;
 
 namespace Managers
@@ -208,7 +209,7 @@ namespace Managers
                 yield break;
             }
 
-            GameObject tileMap = Instantiate(Resources.Load<GameObject>(stageTable.GetTileMapPath(stageId)));
+            GameObject tileMap = Instantiate(Resources.Load<GameObject>(stageTable.GetTileMapPath(stageId)),Vector3.zero, Quaternion.identity);
             if (tileMap)
             {
                 var grids = GameObject.FindWithTag("Grid")?.transform;

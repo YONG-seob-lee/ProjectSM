@@ -1,8 +1,8 @@
-﻿using Characters;
-using Interface;
+﻿using Interface;
+using Units;
 using UnityEngine;
 
-namespace Weapon
+namespace Weapons
 {
     public class SM_WeaponBase : MonoBehaviour, ISM_Weapon
     {

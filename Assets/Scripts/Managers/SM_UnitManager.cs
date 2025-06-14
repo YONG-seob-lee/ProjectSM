@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Characters;
 using Systems;
 using Systems.EventHub;
 using Table;
+using Units;
 using UnityEngine;
 using Zenject;
 

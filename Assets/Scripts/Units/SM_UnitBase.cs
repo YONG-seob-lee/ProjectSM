@@ -2,7 +2,7 @@
 using Systems;
 using UnityEngine;
 
-namespace Characters
+namespace Units
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(SpriteRenderer))]

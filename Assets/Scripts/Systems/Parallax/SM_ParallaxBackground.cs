@@ -22,7 +22,7 @@ namespace Systems.Parallax
         private void LateUpdate()
         {
             Vector3 delta = cameraTransform.position - previousCameraPosition;
-            transform.position += new Vector3(delta.x * parallaxFactor, delta.y * parallaxFactor, 0f);
+            transform.position += new Vector3(delta.x * parallaxFactor, 0f, 0f);
             previousCameraPosition = cameraTransform.position;
         }
     }

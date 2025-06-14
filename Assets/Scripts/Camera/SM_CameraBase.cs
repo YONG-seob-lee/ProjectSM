@@ -21,33 +21,34 @@ namespace Camera
         public virtual void SetLookAtTarget(Transform target) { }
     }
 
+    [RequireComponent(typeof(CinemachineBrain))]
     public class SM_CinemaCameraBase : SM_CameraBase
     {
-        [SerializeField] protected CinemachineVirtualCamera _vcam;
+        [SerializeField] protected CinemachineCamera _cinaCam;
 
         public virtual void Activate()
         {
-            _vcam.Priority = 20; // 활성 우선순위
+            _cinaCam.Priority = 20; // 활성 우선순위
         }
 
         public virtual void Deactivate()
         {
-            _vcam.Priority = 10; // 비활성 우선순위
+            _cinaCam.Priority = 10; // 비활성 우선순위
         }
 
         public virtual void SetFollowTarget(Transform target)
         {
-            _vcam.Follow = target;
+            _cinaCam.Follow = target;
         }
 
         public virtual void SetLookAtTarget(Transform target)
         {
-            _vcam.LookAt = target;
+            _cinaCam.LookAt = target;
         }
 
-        public CinemachineVirtualCamera GetVCam()
+        public CinemachineCamera GetVCam()
         {
-            return _vcam;
+            return _cinaCam;
         }
     }
 }
