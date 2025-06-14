@@ -18,6 +18,7 @@
             _stateName = name;
             
         }
+        
         public virtual void Finalize() { }
         public void OnBeginState() => Begin();
         public void OnExitState() => Exit();
@@ -26,5 +27,6 @@
         protected virtual void Exit() {}
         
         public virtual void Update() {}
+
     }
 }

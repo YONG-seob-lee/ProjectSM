@@ -7,26 +7,18 @@ namespace Characters
 {
     public class SM_PlayerUnit : SM_UnitBase
     {
-        private SM_ManagerEventHub _eventHub;
         private Vector2 _rawInput = Vector2.zero;
         private bool bInitialize = false;
 
         public override void Initialize(ESM_UnitType unitType)
         {
             base.Initialize(unitType);
-            _eventHub = SM_GlobalEventHub.Instance;
-            if (_eventHub != null)
-            {
-                _eventHub.OnInputReceived += OnInputReceived;
-            }
+            SM_GlobalEventHub.StageHub.OnInputReceived += OnInputReceived;
         }
 
         private void OnDestroy()
         {
-            if (_eventHub != null)
-            {
-                _eventHub.OnInputReceived -= OnInputReceived;
-            }
+            SM_GlobalEventHub.StageHub.OnInputReceived -= OnInputReceived;
         }
 
         protected override void Update()

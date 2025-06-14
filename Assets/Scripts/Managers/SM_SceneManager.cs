@@ -157,7 +157,7 @@ namespace Managers
             yield return null;
 
             // 3. Mode 바인딩 to Scene
-            yield return StartCoroutine(MakeMode(command.NextSceneName, () => unloadFinished = true));
+            yield return StartCoroutine(MakeStage(command.NextSceneName, () => unloadFinished = true));
 
             // 4. 최소 로딩시간 보장.
             while (timer < minLoadingTime)
@@ -187,18 +187,16 @@ namespace Managers
             return nextScene;
         }
 
-        private IEnumerator MakeMode(string nextSceneName, Action onComplete = null)
+        private IEnumerator MakeStage(string nextSceneName, Action onComplete = null)
         {
-            SM_ModeManager modeManager = (SM_ModeManager)SM_GameManager.Instance.GetManager(ESM_Manager.ModeManager);
-            if(!modeManager)
+            SM_StageManager stageManager = (SM_StageManager)SM_GameManager.Instance.GetManager(ESM_Manager.StageManager);
+            if(!stageManager)
             {
-                SM_Log.ASSERT(false, "[ModeManager] is not exist!! ");
+                SM_Log.ASSERT(false, "[StageManager] is not exist!! ");
                 yield break;
             }
 
-            modeManager.ClearMode();
-            modeManager.RegisterMode(nextSceneName);
-            onComplete?.Invoke();
+            stageManager.RegisterStage(nextSceneName);
             yield return null;
         }
         

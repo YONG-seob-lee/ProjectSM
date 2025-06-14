@@ -54,7 +54,7 @@ namespace Characters
         {
             if (_movementDiraction.x != 0)
             {
-                _spriteRenderer.flipX = _movementDiraction.x < 0;
+                _spriteRenderer.flipX = _movementDiraction.x > 0;
             }
         }
 

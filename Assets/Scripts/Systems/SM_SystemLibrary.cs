@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Interface;
 using UI;
@@ -90,7 +91,21 @@ namespace Systems
             if (type == typeof(string)) return raw;
             if (type == typeof(bool)) return bool.Parse(raw);
             if (type == typeof(GameObject)) return Resources.Load<GameObject>(raw);
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                Type elementType = type.GetGenericArguments()[0];
 
+                if (elementType == typeof(int))
+                {
+                    return raw.Split(';').Select(s => int.Parse(s.Trim())).ToList();
+                }
+
+                if (elementType == typeof(string))
+                {
+                    return raw.Split(';').Select(s => s.Trim()).ToList();
+                }
+            }
+            
             throw new Exception($"지원되지 않는 타입 : {type.Name}");
         }
 

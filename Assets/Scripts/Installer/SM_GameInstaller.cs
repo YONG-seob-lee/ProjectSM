@@ -18,7 +18,7 @@ namespace Installer
         [SerializeField] private SM_UIManager uiManager;
         [SerializeField] private SM_TableManager tableManager;
         [SerializeField] private SM_InputManager inputManager;
-        [SerializeField] private SM_ModeManager modeManager;
+        [SerializeField] private SM_StageManager stageManager;
         [SerializeField] private SM_UserSettingManager userSettingManager;
         [SerializeField] private SM_UnitManager unitManager;
         [SerializeField] private SM_GridManager gridManager;
@@ -33,15 +33,24 @@ namespace Installer
         {
             SignalBusInstaller.Install(Container);
         
+            // Manager Event Hub Signal
             Container.DeclareSignal<SceneLoadedSignal>();
             Container.DeclareSignal<Signal_FirebaseReady>();
             Container.DeclareSignal<Signal_InitializeManagers>();
 
             var eventHub = new SM_ManagerEventHub();
-            SM_GlobalEventHub.Initialize(eventHub);
+            SM_GlobalEventHub.InitializeEventHub(eventHub);
             Container.Bind<SM_ManagerEventHub>().FromInstance(eventHub).AsSingle();
             Container.BindSignal<SceneLoadedSignal>().ToMethod<SM_ManagerEventHub>(x => x.OnSceneLoadedSignalReceived).FromResolve();
 
+            // Stage Event Hub Signal
+            Container.DeclareSignal<Signal_StageClear>();
+            Container.DeclareSignal<Signal_HitDamaged>();
+
+            var stageHub = new SM_StageEventHub();
+            SM_GlobalEventHub.InitializeStageHub(stageHub);
+            Container.Bind<SM_StageEventHub>().FromInstance(stageHub).AsSingle();
+            
             
             Container.Bind<SM_GameManager>().FromInstance(gameManager).AsSingle();
             Container.Bind<SM_PlayerController>().FromInstance(playerController).AsSingle();
@@ -52,7 +61,7 @@ namespace Installer
             Container.Bind().FromInstance(uiManager).AsSingle();
             Container.Bind().FromInstance(tableManager).AsSingle();
             Container.Bind().FromInstance(inputManager).AsSingle();
-            Container.Bind().FromInstance(modeManager).AsSingle();
+            Container.Bind().FromInstance(stageManager).AsSingle();
             Container.Bind().FromInstance(userSettingManager).AsSingle();
             Container.Bind().FromInstance(unitManager).AsSingle();
             Container.Bind().FromInstance(gridManager).AsSingle();

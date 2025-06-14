@@ -8,7 +8,7 @@ public enum ESM_Manager
     UIManager = 2,
     TableManager = 3,
     InputManager = 4,
-    ModeManager = 5,
+    StageManager = 5,
     UserSettingManager = 6,
     DBManager = 7,
     FirebaseManager = 8,

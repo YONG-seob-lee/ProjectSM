@@ -1,5 +1,9 @@
 Key,ModeName,ModeType,TriggerType,TriggerParam
-1,Noemal_01,1,1,120
-2,Boss_01,2,3,0
-3,Normal_02,1,1,120
-4,Zombie_01,3,2,30
+1,Normal_01,1,1,120
+2,Normal_02,1,1,120
+3,Normal_03,1,1,120
+4,Normal_04,1,1,180
+5,Boss_01,2,3,0
+6,Normal_02,1,1,120
+7,Zombie_01,3,2,30
+8,Zombie_02,3,2,30

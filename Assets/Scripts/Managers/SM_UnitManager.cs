@@ -65,6 +65,8 @@ namespace Managers
                 return null;
             }
 
+            var unitFolder = GameObject.FindWithTag("Unit")?.transform;
+            UnitObject.transform.SetParent(unitFolder, false);
             SM_UnitBase unit = UnitObject.GetComponent<SM_UnitBase>();
             unit.Initialize(unitType);
 

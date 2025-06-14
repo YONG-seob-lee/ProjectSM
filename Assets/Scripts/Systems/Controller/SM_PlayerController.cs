@@ -14,6 +14,7 @@ namespace Systems.Controller
         private Dictionary<string, Key> _actionToKeyMap = new()
         {
             { "MoveUp", Key.W },
+            { "MoveDown", Key.S},
             { "MoveLeft", Key.A },
             { "MoveRight", Key.D },
             { "UseSkill", Key.Q },

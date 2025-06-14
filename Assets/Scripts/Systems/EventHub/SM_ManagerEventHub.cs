@@ -1,5 +1,4 @@
 ﻿using System;
-using Systems.Controller;
 using Systems.EventSignals;
 using Systems.Interface;
 using UnityEngine.SceneManagement;
@@ -13,15 +12,6 @@ namespace Systems.EventHub
         {
             OnSceneChanged?.Invoke(signal.Scene, signal.LoadMode);
         }
-        public event Action<string, EInputState> OnInputReceived;
-
-        public void BroadcastInput(string action, EInputState state)
-        {
-            OnInputReceived?.Invoke(action, state);
-        }
-        
-        public event Action OnPauseRequested;
-        public event Action OnGameOver;
     }
     
     public class Signal_InitializeManagers

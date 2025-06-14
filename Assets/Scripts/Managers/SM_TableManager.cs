@@ -15,8 +15,8 @@ public enum ESM_TableType
     PrefabFile,
     UI,
     Item,
+    Stage,
     Mode,
-    ModeSequence,
     EnemyUnit,
 }
 
