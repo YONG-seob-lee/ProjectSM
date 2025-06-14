@@ -11,7 +11,8 @@ namespace UI.Button
 {
     public enum ESM_DefaultButtonType
     {
-        Start,
+        IntoStage,
+        StartStage,
         Option,
         Exit
     }
@@ -24,7 +25,7 @@ namespace UI.Button
 
             switch (ButtonType)
             {
-                case ESM_DefaultButtonType.Start:
+                case ESM_DefaultButtonType.IntoStage:
                 {
                     SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
                     if (!tableManager)
@@ -46,6 +47,17 @@ namespace UI.Button
                     
                     SM_SceneManager sceneManager = (SM_SceneManager)SM_GameManager.Instance.GetManager(ESM_Manager.SceneManager);
                     sceneManager.RequestSceneChange(command);
+                    break;
+                }
+                case ESM_DefaultButtonType.StartStage:
+                {
+                    SM_StageManager stageManager = (SM_StageManager)SM_GameManager.Instance.GetManager(ESM_Manager.StageManager);
+                    if (!stageManager)
+                    {
+                        SM_Log.ASSERT(false, "[Stage Manager] is not exist!");
+                        return;
+                    }
+                    stageManager.StartStage();
                     break;
                 }
                 case ESM_DefaultButtonType.Option:

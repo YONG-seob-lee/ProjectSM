@@ -37,37 +37,23 @@ namespace Managers
 
         public SM_UnitBase CreateUnit(ESM_UnitType unitType)
         {
-            SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
-            if (!tableManager)
+            SM_UnitBase unit = null;
+            
+            switch (unitType)
             {
-                SM_Log.ASSERT(false, "[TableManager] is not exist!!");
-                return null;
-            }
-
-            SM_EnemyUnit_DataTable EnemyTable = (SM_EnemyUnit_DataTable)tableManager.GetTable(ESM_TableType.EnemyUnit);
-            if (!EnemyTable)
-            {
-                SM_Log.ASSERT(false, "[EnemyUnit Table] is not exist!!");
-                return null;
-            }
-
-            string prefabPath = EnemyTable.GetPath();
-            if (string.IsNullOrEmpty(prefabPath))
-            {
-                SM_Log.ERROR($"유닛 타입({unitType})에 대한 프리팹 경로가 없습니다.");
-                return null;
+                case ESM_UnitType.Player:
+                    CreatePlayer(unitType);
+                    break;
+                case ESM_UnitType.Enemy:
+                    unit = CreateEnemy(unitType);
+                    break;
+                case ESM_UnitType.Boss:
+                    CreateBoss();
+                    break;
+                default:
+                    break;
             }
             
-            GameObject UnitObject = GameObject.Instantiate(Resources.Load<GameObject>(prefabPath));
-            if (!UnitObject)
-            {
-                SM_Log.ERROR($"Resources.Load 실패: {prefabPath}");
-                return null;
-            }
-
-            var unitFolder = GameObject.FindWithTag("Unit")?.transform;
-            UnitObject.transform.SetParent(unitFolder, false);
-            SM_UnitBase unit = UnitObject.GetComponent<SM_UnitBase>();
             unit.Initialize(unitType);
 
             if (!Units.ContainsKey(unitType))
@@ -80,6 +66,79 @@ namespace Managers
             }
             
             return unit;
+        }
+
+        private SM_UnitBase CreatePlayer(ESM_UnitType unitType)
+        {
+            SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
+            if (!tableManager)
+            {
+                SM_Log.ASSERT(false, "[TableManager] is not exist!!");
+                return null;
+            }
+            SM_PlayerUnit_DataTable playerTable = (SM_PlayerUnit_DataTable)tableManager.GetTable(ESM_TableType.PlayerUnit);
+            if (!playerTable)
+            {
+                SM_Log.ASSERT(false, "[PlayerUnit Table] is not exist!!");
+                return null;
+            }
+            
+            string prefabPath = playerTable.GetPlayerPath(1);
+            if (string.IsNullOrEmpty(prefabPath))
+            {
+                SM_Log.ERROR($"유닛 타입({unitType})에 대한 프리팹 경로가 없습니다.");
+                return null;
+            }
+            
+            GameObject UnitObject = GameObject.Instantiate(Resources.Load<GameObject>(prefabPath));
+            if (!UnitObject)
+            {
+                SM_Log.ERROR($"Resources.Load 실패: {prefabPath}");
+                return null;
+            }
+            
+            var unitFolder = GameObject.FindWithTag("Unit")?.transform;
+            UnitObject.transform.SetParent(unitFolder, false);
+            return UnitObject.GetComponent<SM_UnitBase>();
+        }
+
+        private SM_UnitBase CreateEnemy(ESM_UnitType unitType)
+        {
+            SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
+            if (!tableManager)
+            {
+                SM_Log.ASSERT(false, "[TableManager] is not exist!!");
+                return null;
+            }
+            SM_EnemyUnit_DataTable enemyTable = (SM_EnemyUnit_DataTable)tableManager.GetTable(ESM_TableType.EnemyUnit);
+            if (!enemyTable)
+            {
+                SM_Log.ASSERT(false, "[EnemyUnit Table] is not exist!!");
+                return null;
+            }
+
+            string prefabPath = enemyTable.GetPath();
+            if (string.IsNullOrEmpty(prefabPath))
+            {
+                SM_Log.ERROR($"유닛 타입({unitType})에 대한 프리팹 경로가 없습니다.");
+                return null;
+            }
+            
+            GameObject UnitObject = GameObject.Instantiate(Resources.Load<GameObject>(prefabPath));
+            if (!UnitObject)
+            {
+                SM_Log.ERROR($"Resources.Load 실패: {prefabPath}");
+                return null;
+            }
+            
+            var unitFolder = GameObject.FindWithTag("Unit")?.transform;
+            UnitObject.transform.SetParent(unitFolder, false);
+            return UnitObject.GetComponent<SM_UnitBase>();
+        }
+
+        private SM_UnitBase CreateBoss()
+        {
+            return null;
         }
 
         public void UnregisterUnit(SM_UnitBase unit)

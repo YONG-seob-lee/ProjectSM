@@ -197,6 +197,7 @@ namespace Managers
             }
 
             stageManager.RegisterStage(nextSceneName);
+            onComplete?.Invoke();
             yield return null;
         }
         

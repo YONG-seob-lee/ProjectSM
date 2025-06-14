@@ -37,6 +37,13 @@ namespace Managers
 
         public void RegisterStage(string nextSceneName)
         {
+            CreateStageData(nextSceneName);
+            
+            _modeHelper.RegisterMode(_stageData.ModeSequence);
+        }
+
+        private void CreateStageData(string nextSceneName)
+        {
             SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
             if (!tableManager)
             {
@@ -59,12 +66,23 @@ namespace Managers
                 CurrentModeIndex = 0,
                 IsCompleted = false
             };
-            
-            _modeHelper.RegisterMode(_stageData.ModeSequence);
+        }
+
+        private void CreatePlayer()
+        {
+            SM_UnitManager unitManager = (SM_UnitManager)SM_GameManager.Instance.GetManager(ESM_Manager.UnitManager);
+            if (!unitManager)
+            {
+                SM_Log.ASSERT(false, "[Unit Manager] is not exist!");
+                return;
+            }
+
+            unitManager.CreateUnit(ESM_UnitType.Player);
         }
 
         public void StartStage()
         {
+            CreatePlayer();
             StartCurrentMode();
         }
 

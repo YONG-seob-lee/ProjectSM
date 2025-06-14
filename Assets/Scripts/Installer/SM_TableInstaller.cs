@@ -15,7 +15,8 @@ namespace Installer
         [SerializeField] private SM_UI_DataTable uiTable;
         [SerializeField] private SM_Item_DataTable itemTable;
         [SerializeField] private SM_Mode_DataTable modeTable;
-        [FormerlySerializedAs("modeSequenceTable")] [SerializeField] private SM_Stage_DataTable stageTable;
+        [SerializeField] private SM_Stage_DataTable stageTable;
+        [SerializeField] private SM_PlayerUnit_DataTable playerTable;
         [SerializeField] private SM_EnemyUnit_DataTable enemyTable;
 
         // ReSharper disable Unity.PerformanceAnalysis
@@ -39,6 +40,8 @@ namespace Installer
             tableManager.RegisterTable(ESM_TableType.Mode, modeTable);
             Container.Bind<SM_Stage_DataTable>().FromInstance(stageTable).AsSingle();
             tableManager.RegisterTable(ESM_TableType.Stage, stageTable);
+            Container.Bind<SM_PlayerUnit_DataTable>().FromInstance(playerTable).AsSingle();
+            tableManager.RegisterTable(ESM_TableType.PlayerUnit, playerTable);
             Container.Bind<SM_EnemyUnit_DataTable>().FromInstance(enemyTable).AsSingle();
             tableManager.RegisterTable(ESM_TableType.EnemyUnit, enemyTable);
         }

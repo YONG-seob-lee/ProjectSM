@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using Systems;
 using UI.Base;
 using UI.Button;
 using UnityEngine;
@@ -14,7 +13,7 @@ namespace UI
 
         private void Start()
         {
-            startGameButton.Initialize(ESM_DefaultButtonType.Start);
+            startGameButton.Initialize(ESM_DefaultButtonType.IntoStage);
         }
     }
 }

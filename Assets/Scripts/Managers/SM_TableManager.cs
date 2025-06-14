@@ -17,7 +17,9 @@ public enum ESM_TableType
     Item,
     Stage,
     Mode,
+    PlayerUnit,
     EnemyUnit,
+    BossUnit,
 }
 
 namespace Managers

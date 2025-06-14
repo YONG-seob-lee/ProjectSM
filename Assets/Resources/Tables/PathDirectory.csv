@@ -4,4 +4,6 @@ Key,Directory
 3,Prefabs/Items
 4,Prefabs/UI
 5,Prefabs/Units/Player
-6,Props/TilePalette
+6,Prefabs/Units/Enemy
+7,Prefabs/Units/Boss
+8,Props/TilePalette

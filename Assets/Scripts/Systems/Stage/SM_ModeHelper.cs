@@ -42,6 +42,11 @@ namespace Systems.Stage
                 SM_Log.ASSERT(false, "[Mode Data Table] is not exist!!");
                 return;
             }
+
+            if (modeIds == null || modeIds.Count <= 0)
+            {
+                return;
+            }
             
             foreach (int modeID in modeIds)
             {

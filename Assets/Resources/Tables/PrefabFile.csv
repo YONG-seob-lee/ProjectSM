@@ -3,7 +3,8 @@ Key,Directory_Key,Prefab_FileName
 2,4,Logo_Panel
 3,4,Lobby_Panel
 4,4,HUD_Panel
-1001,1,GoblinFire_01
-1002,1,GoblinFire_02
-1003,1,GoblinFire_03
-1004,1,GoblinFire_04
+1001,5,Shaman_Default
+2001,6,GoblinFire_01
+2002,6,GoblinFire_02
+2003,6,GoblinFire_03
+2004,6,GoblinFire_04
