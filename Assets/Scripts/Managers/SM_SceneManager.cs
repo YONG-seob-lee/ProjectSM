@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using Installer;
 using Systems;
 using Systems.EventHub;
 using Systems.EventSignals;
@@ -55,18 +54,7 @@ namespace Managers
             {
                 case ESM_TransitionType.Direct:
                 {
-                    // 1. UI Clear
-                    UnloadScene(command.ClearPolicy);
-                
-                    // 2. Diract Show UI
-                    GameObject nextScene = GetNextScene(command.NextSceneName);
-            
-                    if (!nextScene)
-                    {
-                        SM_Log.ASSERT(false, $"There is No Next Scene(UI). ({command.NextSceneName}). Please Check UITable");
-                    }
-                    SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
-                    uiManager.PushUI(nextScene);
+                    HandleSceneDirection(command);
                     break;
                 }
                 case ESM_TransitionType.Fade:
@@ -79,6 +67,23 @@ namespace Managers
                     break;
             }
         }
+
+        private void HandleSceneDirection(SM_SceneCommand command)
+        {
+            // 1. UI Clear
+            UnloadScene(command.ClearPolicy);
+                
+            // 2. Diract Show UI
+            GameObject nextScene = GetNextScene(command.NextSceneName);
+            
+            if (!nextScene)
+            {
+                SM_Log.ASSERT(false, $"There is No Next Scene(UI). ({command.NextSceneName}). Please Check UITable");
+            }
+            SM_UIManager uiManager = (SM_UIManager)SM_GameManager.Instance.GetManager(ESM_Manager.UIManager);
+            uiManager.PushUI(nextScene);
+        }
+
         private IEnumerator HandleSceneTransition(SM_SceneCommand command)
         {
             if (command.TransitionStyle == ESM_TransitionType.Fade)
@@ -157,7 +162,7 @@ namespace Managers
             yield return null;
 
             // 3. Mode 바인딩 to Scene
-            yield return StartCoroutine(MakeStage(command.NextSceneName, () => unloadFinished = true));
+            yield return StartCoroutine(MakeStage(command.StageId, () => unloadFinished = true));
 
             // 4. 최소 로딩시간 보장.
             while (timer < minLoadingTime)
@@ -187,16 +192,34 @@ namespace Managers
             return nextScene;
         }
 
-        private IEnumerator MakeStage(string nextSceneName, Action onComplete = null)
+        private IEnumerator MakeStage(int stageId, Action onComplete = null)
         {
-            SM_StageManager stageManager = (SM_StageManager)SM_GameManager.Instance.GetManager(ESM_Manager.StageManager);
-            if(!stageManager)
+            SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
+            if(!tableManager)
             {
-                SM_Log.ASSERT(false, "[StageManager] is not exist!! ");
+                SM_Log.ASSERT(false, "[TableManager] is not exist!! ");
                 yield break;
             }
 
-            stageManager.RegisterStage(nextSceneName);
+            SM_Stage_DataTable stageTable = (SM_Stage_DataTable)tableManager.GetTable(ESM_TableType.Stage);
+            if (!stageTable)
+            {
+                SM_Log.ASSERT(false, "[Stage Table] is not exist!");
+                yield break;
+            }
+
+            GameObject tileMap = Instantiate(Resources.Load<GameObject>(stageTable.GetTileMapPath(stageId)));
+            if (tileMap)
+            {
+                var grids = GameObject.FindWithTag("Grid")?.transform;
+                tileMap.transform.SetParent(grids, false);
+            }
+            GameObject backGround = Instantiate(Resources.Load<GameObject>(stageTable.GetBackgroundPath(stageId)));
+            if (backGround)
+            {
+                var props = GameObject.FindWithTag("Props")?.transform;
+                backGround.transform.SetParent(props, false);
+            }
             onComplete?.Invoke();
             yield return null;
         }

@@ -11,6 +11,7 @@ namespace UI
     {
         public string NextSceneName; // 다음 씬 이름
         public ESM_LoadingUIType LoadingType; // 로딩 UI 타입
+        public int StageId; // 스테이지 진입시 필요한 데이터
         public float FadeDuration;
         public Action OnTransitionComplete; // 씬 전환 완료 시 콜백
         public ESM_TransitionType TransitionStyle;
@@ -21,6 +22,18 @@ namespace UI
         {
             NextSceneName = next;
             LoadingType = loadingUIType;
+            FadeDuration = fadeDuration;
+            OnTransitionComplete = onComplete;
+            TransitionStyle = transitionStyle;
+            ClearPolicy = clearPolicy;
+        }
+        
+        public SM_SceneCommand(string next, ESM_LoadingUIType loadingUIType, int stageId, float fadeDuration,
+            Action onComplete, ESM_TransitionType transitionStyle, ESM_UIClearPolicy clearPolicy)
+        {
+            NextSceneName = next;
+            LoadingType = loadingUIType;
+            StageId = stageId;
             FadeDuration = fadeDuration;
             OnTransitionComplete = onComplete;
             TransitionStyle = transitionStyle;

@@ -19,6 +19,7 @@ namespace UI.Button
     
     public class SM_DefaultButton : SM_ButtonBase<ESM_DefaultButtonType>
     {
+        private int CurrentStageId = 0;
         public override void OnClick()
         {
             SM_Log.INFO($"[SM_DefaultButton] 버튼 클릭됨: {ButtonType}");
@@ -27,26 +28,15 @@ namespace UI.Button
             {
                 case ESM_DefaultButtonType.IntoStage:
                 {
-                    SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
-                    if (!tableManager)
+                    SM_StageManager stageManager = (SM_StageManager)SM_GameManager.Instance.GetManager(ESM_Manager.StageManager);
+                    if (!stageManager)
                     {
-                        SM_Log.ASSERT(false, "[TableManager] is not exist!");
+                        SM_Log.ASSERT(false, "[Stage Manager] is not exist!");
                         return;
                     }
                     
-                    var command = new SM_SceneCommand(
-                        next: SM_HUDPanel.GetName(),
-                        loadingUIType: ESM_LoadingUIType.Default,
-                        fadeDuration: tableManager ? tableManager.GetParameter<float>(ESM_CommonType.FADE_DURATION_TIME) : 1f,
-                        onComplete: () =>
-                        {
-                            SM_Log.INFO("메인 HUD 이동 완료");
-                        },
-                        transitionStyle: ESM_TransitionType.Fade,
-                        clearPolicy: ESM_UIClearPolicy.ClearAllExceptTop);
+                    stageManager.IntoStage(CurrentStageId);
                     
-                    SM_SceneManager sceneManager = (SM_SceneManager)SM_GameManager.Instance.GetManager(ESM_Manager.SceneManager);
-                    sceneManager.RequestSceneChange(command);
                     break;
                 }
                 case ESM_DefaultButtonType.StartStage:
@@ -73,6 +63,11 @@ namespace UI.Button
                     break;
                 }
             }
+        }
+        
+        public void SetStageId(int stageId)
+        {
+            CurrentStageId = stageId; 
         }
     }
 }

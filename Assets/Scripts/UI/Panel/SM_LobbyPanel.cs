@@ -11,9 +11,11 @@ namespace UI
 
         [SerializeField] private SM_DefaultButton startGameButton;
 
+        private int CurrentStageId = 1;
         private void Start()
         {
             startGameButton.Initialize(ESM_DefaultButtonType.IntoStage);
+            startGameButton.SetStageId(CurrentStageId);
         }
     }
 }

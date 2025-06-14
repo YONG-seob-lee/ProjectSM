@@ -6,4 +6,5 @@ Key,Directory
 5,Prefabs/Units/Player
 6,Prefabs/Units/Enemy
 7,Prefabs/Units/Boss
-8,Props/TilePalette
+8,Props/TileMap
+9,Props/BackGround

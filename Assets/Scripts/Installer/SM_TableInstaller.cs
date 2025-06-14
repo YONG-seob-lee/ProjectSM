@@ -18,6 +18,8 @@ namespace Installer
         [SerializeField] private SM_Stage_DataTable stageTable;
         [SerializeField] private SM_PlayerUnit_DataTable playerTable;
         [SerializeField] private SM_EnemyUnit_DataTable enemyTable;
+        [SerializeField] private SM_TileMap_DataTable tileMapTable;
+        [SerializeField] private SM_Bg_DataTable bgTable;
 
         // ReSharper disable Unity.PerformanceAnalysis
 
@@ -44,6 +46,10 @@ namespace Installer
             tableManager.RegisterTable(ESM_TableType.PlayerUnit, playerTable);
             Container.Bind<SM_EnemyUnit_DataTable>().FromInstance(enemyTable).AsSingle();
             tableManager.RegisterTable(ESM_TableType.EnemyUnit, enemyTable);
+            Container.Bind<SM_TileMap_DataTable>().FromInstance(tileMapTable).AsSingle();
+            tableManager.RegisterTable(ESM_TableType.TileMap, tileMapTable);
+            Container.Bind<SM_Bg_DataTable>().FromInstance(bgTable).AsSingle();
+            tableManager.RegisterTable(ESM_TableType.Background, bgTable);
         }
     }
 }

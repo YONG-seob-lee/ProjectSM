@@ -1,7 +1,9 @@
-﻿using Systems;
+﻿using System.Collections;
+using Systems;
 using Systems.EventHub;
 using Systems.Stage;
 using Table;
+using UI;
 using UnityEngine;
 using Zenject;
 
@@ -35,20 +37,58 @@ namespace Managers
         {
         }
 
-        public void RegisterStage(string nextSceneName)
+        public void IntoStage(int stageId)
         {
-            CreateStageData(nextSceneName);
+            StartCoroutine(ProcessStage(stageId));
             
             _modeHelper.RegisterMode(_stageData.ModeSequence);
         }
 
-        private void CreateStageData(string nextSceneName)
+        public IEnumerator ProcessStage(int stageId)
+        {
+            yield return ChangeScene(stageId);
+            yield return CreateStageData(stageId);
+        }
+
+        private IEnumerator ChangeScene(int stageId)
+        {
+            SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
+            if (!tableManager)
+            {
+                SM_Log.ASSERT(false, "[TableManager] is not exist!");
+                yield break;
+            }
+
+            SM_Stage_DataTable stageTable = (SM_Stage_DataTable)tableManager.GetTable(ESM_TableType.Stage);
+            if (!stageTable)
+            {
+                SM_Log.ASSERT(false, "[Stage Table] is not exist!");
+                yield break;
+            }
+
+            var command = new SM_SceneCommand(
+                next: stageTable.GetHubName(stageId),
+                loadingUIType: ESM_LoadingUIType.Default,
+                stageId : stageId,
+                fadeDuration: tableManager ? tableManager.GetParameter<float>(ESM_CommonType.FADE_DURATION_TIME) : 1f,
+                onComplete: () =>
+                {
+                    SM_Log.INFO("메인 HUD 이동 완료");
+                },
+                transitionStyle: ESM_TransitionType.Fade,
+                clearPolicy: ESM_UIClearPolicy.ClearAllExceptTop);
+                    
+            SM_SceneManager sceneManager = (SM_SceneManager)SM_GameManager.Instance.GetManager(ESM_Manager.SceneManager);
+            sceneManager.RequestSceneChange(command);
+        }
+
+        private IEnumerator CreateStageData(int stageId)
         {
             SM_TableManager tableManager = (SM_TableManager)SM_GameManager.Instance.GetManager(ESM_Manager.TableManager);
             if (!tableManager)
             {
                 SM_Log.WARNING("TableManager is not exist!!");
-                return;
+                yield break;
             }
 
             SM_Stage_DataTable stageTable = (SM_Stage_DataTable)tableManager.GetTable(ESM_TableType.Stage);
@@ -56,13 +96,13 @@ namespace Managers
             if (!stageTable || !modeTable)
             {
                 SM_Log.ERROR("Stage Table or Mode Table is not exist.");
-                return;
+                yield break;
             }
 
             _stageData = new SM_StageData
             {
                 StageId = 1,
-                ModeSequence = stageTable.GetModeSequence(nextSceneName),
+                ModeSequence = stageTable.GetModeSequence(stageId),
                 CurrentModeIndex = 0,
                 IsCompleted = false
             };

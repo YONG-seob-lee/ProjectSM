@@ -20,6 +20,8 @@ public enum ESM_TableType
     PlayerUnit,
     EnemyUnit,
     BossUnit,
+    TileMap,
+    Background,
 }
 
 namespace Managers
